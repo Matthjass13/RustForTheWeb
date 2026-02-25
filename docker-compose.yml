@@ -1,0 +1,46 @@
+# this file initialises the Axum, Python, and PostgresDB containers
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secret}
+      POSTGRES_DB: ${POSTGRES_DB:-mydb}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    
+    axum_be:
+      build:
+        context: ./Axum
+        dockerfile: Dockerfile
+      container_name: axum_be
+      restart: unless-stopped
+      ports:
+        - "8080:8080"
+      environment:
+        DATABASE_URL: postgres://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-secret}@postgres:5432/${POSTGRES_DB:-mydb}
+
+    python_be:
+      build:
+        context: ./PythonApp
+        dockerfile: Dockerfile
+      container_name: python_be
+      restart: unless-stopped
+      ports:
+        - "8000:8000"
+      environment:
+        DATABASE_URL: postgres://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-secret}@postgres:5432/${POSTGRES_DB:-mydb}
+
+volumes:
+  postgres_data:
+  POSTGRES_USER=user1
+  POSTGRES_PASSWORD=password 
+  POSTGRES_DB=postgres_db
+
+
+
