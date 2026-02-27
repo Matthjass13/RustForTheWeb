@@ -1,0 +1,9 @@
+[package]
+name = "rust_rocket_app"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+rocket = { version = "0.5.1", features = ["json"] }
+serde = { version = "1.0.228", features = ["derive"] }
+sqlx = "0.8.6"
