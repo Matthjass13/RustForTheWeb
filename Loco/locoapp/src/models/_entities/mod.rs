@@ -4,4 +4,5 @@ pub mod prelude;
 
 pub mod articles;
 pub mod comments;
+pub mod movies;
 pub mod users;
