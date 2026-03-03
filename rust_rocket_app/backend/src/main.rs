@@ -1,53 +1,128 @@
 mod model;
 use rocket::serde::json::Json;
+use rocket::{State, http::Status, response::status::Custom};
 use rocket::{tokio::task::id, *};
+use rocket_cors::{AllowedOrigins, CorsOptions};
+use sqlx::postgres::PgPoolOptions;
+use std::env;
+use tokio_postgres::{Client, NoTls};
 
-use crate::model::User;
+use crate::model::{NewUser, User};
+
+struct DbConn {
+    pool: sqlx::PgPool,
+}
 
 #[launch]
-fn rocket() -> _ {
-    rocket::build().mount("/", routes![index, get_users, get_one_user])
+async fn rocket() -> _ {
+    dotenv::dotenv().ok();
+
+    let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL is not defined");
+
+    let pool = PgPoolOptions::new()
+        .max_connections(5)
+        .connect(&database_url)
+        .await
+        .expect("Impossible de se connecter à la DB");
+
+    rocket::build().manage(DbConn { pool }).mount(
+        "/api",
+        routes![
+            index,
+            get_users,
+            get_one_user,
+            add_user,
+            update_user,
+            delete_user
+        ],
+    )
 }
 
 #[get("/")]
-fn index() -> &'static str {
-    "
-    USAGE
+async fn index(db: &State<DbConn>) -> String {
+    let row: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM information_schema.tables")
+        .fetch_one(&db.pool)
+        .await
+        .unwrap();
 
-      POST /
-
-          accepts raw data in the body of the request and responds with a URL of
-          a page containing the body's content
-
-      GET /<id>
-
-          retrieves the content for the paste with id `<id>`
-    "
+    format!("Nombre de tables: {}", row.0)
 }
 
 #[get("/get_users")]
-fn get_users() -> Json<Vec<User>> {
-    let users: Vec<User> = vec![
-        User {
-            id: 1,
-            name: "Jane".to_string(),
-            email: "ttt".to_string(),
-        },
-        User {
-            id: 2,
-            name: "John".to_string(),
-            email: "ddd".to_string(),
-        },
-    ];
-    Json(users)
+async fn get_users(db: &State<DbConn>) -> Result<Json<Vec<User>>, String> {
+    let users = sqlx::query_as("SELECT id, name, email FROM users")
+        .fetch_all(&db.pool)
+        .await
+        .map_err(|e| e.to_string())?;
+
+    Ok(Json(users))
 }
 
 #[get("/get_users/<user_id>")]
-fn get_one_user(user_id: i32) -> Json<User> {
-    let user: User = User {
-        id: user_id,
-        name: "Jane".to_string(),
-        email: "ttt".to_string(),
-    };
-    Json(user)
+async fn get_one_user(user_id: i32, db: &State<DbConn>) -> Result<Json<User>, String> {
+    let user = sqlx::query_as("Select id, name, email FROM users WHERE id = $1")
+        .bind(user_id)
+        .fetch_one(&db.pool)
+        .await
+        .map_err(|e| e.to_string())?;
+
+    Ok(Json(user))
+}
+
+#[post("/add_user", data = "<user>")]
+async fn add_user(db: &State<DbConn>, user: Json<NewUser>) -> Result<Json<User>, String> {
+    let newUser = sqlx::query_as!(
+        User,
+        r#"
+        INSERT INTO users (name, email)
+        VALUES ($1, $2)
+        RETURNING id, name, email
+        "#,
+        user.name,
+        user.email
+    )
+    .fetch_one(&db.pool)
+    .await
+    .map_err(|e| e.to_string())?;
+
+    Ok(Json(newUser))
+}
+
+#[put("/update_user/<id>", data = "<user>")]
+async fn update_user(
+    db: &State<DbConn>,
+    id: i32,
+    user: Json<NewUser>,
+) -> Result<Json<User>, String> {
+    let updated_user = sqlx::query_as!(
+        User,
+        r#"
+        UPDATE users
+        SET name = $1, email = $2
+        WHERE id = $3
+        RETURNING *
+        "#,
+        user.name,
+        user.email,
+        id
+    )
+    .fetch_one(&db.pool)
+    .await
+    .map_err(|e| e.to_string())?;
+
+    Ok(Json(updated_user))
+}
+
+#[delete("/delete_user/<id>")]
+async fn delete_user(db: &State<DbConn>, id: i32) -> Result<Status, String> {
+    let Dbstatus = sqlx::query!("DELETE FROM users WHERE id = $1", id)
+        .execute(&db.pool)
+        .await
+        .map_err(|e| e.to_string())?;
+
+    if Dbstatus.rows_affected() == 0 {
+        return Ok(Status::NotFound);
+    }
+
+    Ok(Status::NoContent)
 }
