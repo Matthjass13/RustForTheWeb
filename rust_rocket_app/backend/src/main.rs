@@ -25,17 +25,35 @@ async fn rocket() -> _ {
         .await
         .expect("Impossible de se connecter à la DB");
 
-    rocket::build().manage(DbConn { pool }).mount(
-        "/api",
-        routes![
-            index,
-            get_users,
-            get_one_user,
-            add_user,
-            update_user,
-            delete_user
-        ],
+    sqlx::query!(
+        "CREATE TABLE IF NOT EXISTS users (
+                    id SERIAL PRIMARY KEY,
+                    name VARCHAR(100) NOT NULL,
+                    email VARCHAR(100) NOT NULL)"
     )
+    .execute(&pool)
+    .await
+    .expect("Impossible to create database");
+
+    let cors = CorsOptions::default()
+        .allowed_origins(AllowedOrigins::all())
+        .to_cors()
+        .expect("Error while building CORS");
+
+    rocket::build()
+        .manage(DbConn { pool })
+        .mount(
+            "/api",
+            routes![
+                index,
+                get_users,
+                get_one_user,
+                add_user,
+                update_user,
+                delete_user
+            ],
+        )
+        .attach(cors)
 }
 
 #[get("/")]
