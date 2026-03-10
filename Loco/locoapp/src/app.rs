@@ -12,6 +12,10 @@ use loco_rs::{
 };
 use migration::Migrator;
 use std::path::Path;
+use tower_http::cors::{CorsLayer, Any};
+use axum::http::Method;
+
+use crate::initializers::cors::CorsInitializer;
 
 #[allow(unused_imports)]
 use crate::{controllers, models::_entities::users, tasks, workers::downloader::DownloadWorker};
@@ -38,11 +42,31 @@ impl Hooks for App {
         environment: &Environment,
         config: Config,
     ) -> Result<BootResult> {
-        create_app::<Self, Migrator>(mode, environment, config).await
+        println!("BOOT FUNCTION EXECUTED");
+
+        let mut result = create_app::<Self, Migrator>(mode, environment, config).await?;
+
+        let cors = CorsLayer::new()
+            .allow_origin(Any)
+            .allow_methods([
+                Method::GET,
+                Method::POST,
+                Method::PUT,
+                Method::DELETE,
+                Method::OPTIONS,
+            ])
+            .allow_headers(Any);
+
+        if let Some(router) = result.router.take() {
+            result.router = Some(router.layer(cors));
+        }
+
+        Ok(result)
     }
+        
 
     async fn initializers(_ctx: &AppContext) -> Result<Vec<Box<dyn Initializer>>> {
-        Ok(vec![])
+        Ok(vec![Box::new(CorsInitializer)])
     }
 
     fn routes(_ctx: &AppContext) -> AppRoutes {

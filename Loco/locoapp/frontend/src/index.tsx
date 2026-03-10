@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { LocoSplash } from "./LocoSplash";
+import ArticleList from "./ArticleList"; // Importez le nouveau composant
 
 import "./index.css";
 
@@ -12,6 +12,6 @@ if (!root) {
 
 ReactDOM.createRoot(root).render(
   <React.StrictMode>
-    <LocoSplash />
+    <ArticleList /> {/* Utilisez le composant ArticleList ici */}
   </React.StrictMode>,
 );

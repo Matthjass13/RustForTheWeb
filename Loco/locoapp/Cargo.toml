@@ -36,6 +36,7 @@ validator = { version = "0.20" }
 uuid = { version = "1.6", features = ["v4"] }
 include_dir = { version = "0.7" }
 axum-extra = { version = "0.10", features = ["form"] }
+tower-http = "0.6.8"
 
 [[bin]]
 name = "locoapp-cli"
