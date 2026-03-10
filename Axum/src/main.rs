@@ -13,7 +13,6 @@ use sqlx::PgPool;
 use serde::Deserialize;
 use std::env;
 use std::sync::Arc;
-use dotenv::dotenv;
 
 #[derive(Deserialize)]
 struct CreateUserRequest {
@@ -29,7 +28,6 @@ struct UpdateEmailRequest {
 type AppState = Arc<PgPool>;
 #[tokio::main]
 async fn main() {
-    dotenv().ok();
 
     let database_url = env::var("DATABASE_URL")
         .expect("DATABASE_URL must be set");
