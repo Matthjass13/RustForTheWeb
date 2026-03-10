@@ -1,3 +1,5 @@
+\c postgres_db;
+
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100),
