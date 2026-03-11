@@ -26,6 +26,7 @@ impl Initializer for CorsInitializer {
                 Method::POST,
                 Method::PUT,
                 Method::DELETE,
+                Method::PATCH,
                 Method::OPTIONS,
             ])
             .allow_headers(Any);
