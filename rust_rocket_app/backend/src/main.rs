@@ -15,7 +15,10 @@ struct DbConn {
 
 #[launch]
 async fn rocket() -> _ {
-    dotenv::dotenv().ok();
+    match dotenv::dotenv() {
+        Ok(path) => println!("✅ .env chargé depuis : {:?}", path),
+        Err(e) => println!("❌ .env non trouvé : {}", e),
+    }
 
     let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL is not defined");
 
@@ -25,7 +28,7 @@ async fn rocket() -> _ {
         .await
         .expect("Impossible de se connecter à la DB");
 
-    sqlx::query!(
+    sqlx::query(
         "CREATE TABLE IF NOT EXISTS users (
                     id SERIAL PRIMARY KEY,
                     name VARCHAR(100) NOT NULL,
@@ -71,7 +74,7 @@ async fn get_users(db: &State<DbConn>) -> Result<Json<Vec<User>>, String> {
     let users = sqlx::query_as("SELECT id, name, email FROM users")
         .fetch_all(&db.pool)
         .await
-        .map_err(|e| e.to_string())?;
+        .map_err(|e: sqlx::Error| e.to_string())?;
 
     Ok(Json(users))
 }
@@ -82,26 +85,25 @@ async fn get_one_user(user_id: i32, db: &State<DbConn>) -> Result<Json<User>, St
         .bind(user_id)
         .fetch_one(&db.pool)
         .await
-        .map_err(|e| e.to_string())?;
+        .map_err(|e: sqlx::Error| e.to_string())?;
 
     Ok(Json(user))
 }
 
 #[post("/add_user", data = "<user>")]
 async fn add_user(db: &State<DbConn>, user: Json<NewUser>) -> Result<Json<User>, String> {
-    let newUser = sqlx::query_as!(
-        User,
-        r#"
+    let newUser = sqlx::query_as(
+        "
         INSERT INTO users (name, email)
         VALUES ($1, $2)
         RETURNING id, name, email
-        "#,
-        user.name,
-        user.email
+        "
     )
+    .bind(&user.name)
+    .bind(&user.email)
     .fetch_one(&db.pool)
     .await
-    .map_err(|e| e.to_string())?;
+    .map_err(|e: sqlx::Error| e.to_string())?;
 
     Ok(Json(newUser))
 }
@@ -112,31 +114,31 @@ async fn update_user(
     id: i32,
     user: Json<NewUser>,
 ) -> Result<Json<User>, String> {
-    let updated_user = sqlx::query_as!(
-        User,
-        r#"
+    let updated_user = sqlx::query_as(
+        "
         UPDATE users
         SET name = $1, email = $2
         WHERE id = $3
         RETURNING *
-        "#,
-        user.name,
-        user.email,
-        id
+        "
     )
+    .bind(&user.name)
+    .bind(&user.email)
+    .bind(id)
     .fetch_one(&db.pool)
     .await
-    .map_err(|e| e.to_string())?;
+    .map_err(|e: sqlx::Error| e.to_string())?;
 
     Ok(Json(updated_user))
 }
 
 #[delete("/delete_user/<id>")]
 async fn delete_user(db: &State<DbConn>, id: i32) -> Result<Status, String> {
-    let Dbstatus = sqlx::query!("DELETE FROM users WHERE id = $1", id)
+    let Dbstatus = sqlx::query("DELETE FROM users WHERE id = $1")
+        .bind(id)
         .execute(&db.pool)
         .await
-        .map_err(|e| e.to_string())?;
+        .map_err(|e: sqlx::Error| e.to_string())?;
 
     if Dbstatus.rows_affected() == 0 {
         return Ok(Status::NotFound);
