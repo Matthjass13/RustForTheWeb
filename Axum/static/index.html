@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #0f0f0f;
+            --surface: #1a1a1a;
+            --border: #2a2a2a;
+            --accent: #e8ff47;
+            --text: #e8e8e8;
+            --muted: #666;
+            --error: #ff5f5f;
+            --success: #47ffb2;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'IBM Plex Sans', sans-serif;
+            font-weight: 300;
+            min-height: 100vh;
+            padding: 48px 32px;
+        }
+
+        header {
+            display: flex;
+            align-items: baseline;
+            gap: 16px;
+            margin-bottom: 56px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 24px;
+        }
+
+        header h1 {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 1.1rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            color: var(--accent);
+        }
+
+        header span {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            max-width: 960px;
+        }
+
+        @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 28px;
+        }
+
+        .card-title {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.7rem;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title::before {
+            content: '';
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+        }
+
+        .field {
+            margin-bottom: 14px;
+        }
+
+        label {
+            display: block;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--muted);
+            margin-bottom: 6px;
+            letter-spacing: 0.06em;
+        }
+
+        input {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.85rem;
+            padding: 10px 12px;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+
+        input:focus { border-color: var(--accent); }
+
+        button {
+            width: 100%;
+            margin-top: 8px;
+            background: var(--accent);
+            color: #0f0f0f;
+            border: none;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            padding: 12px;
+            cursor: pointer;
+            transition: opacity 0.15s;
+        }
+
+        button:hover { opacity: 0.85; }
+        button:active { opacity: 0.7; }
+
+        button.danger {
+            background: transparent;
+            color: var(--error);
+            border: 1px solid var(--error);
+        }
+
+        .response {
+            margin-top: 14px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.78rem;
+            padding: 12px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            min-height: 48px;
+            color: var(--muted);
+            white-space: pre-wrap;
+            word-break: break-all;
+            transition: color 0.2s;
+        }
+
+        .response.ok { color: var(--success); border-color: #1a3d2e; }
+        .response.err { color: var(--error); border-color: #3d1a1a; }
+
+        .full-width { grid-column: 1 / -1; }
+
+        #users-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .user-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.78rem;
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+        .user-row .uid { color: var(--accent); margin-right: 12px; min-width: 28px; }
+        .user-row .uname { flex: 1; }
+        .user-row .uemail { color: var(--muted); font-size: 0.72rem; }
+
+        .empty { color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; padding: 12px 0; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>USERS_DB</h1>
+    <span>/ rust + axum + postgresql</span>
+</header>
+
+<div class="grid">
+
+    <!-- Create -->
+    <div class="card">
+        <div class="card-title">Create User</div>
+        <div class="field">
+            <label>NAME</label>
+            <input id="create-name" type="text" placeholder="Jane Doe">
+        </div>
+        <div class="field">
+            <label>EMAIL</label>
+            <input id="create-email" type="email" placeholder="jane@example.com">
+        </div>
+        <button onclick="createUser()">POST /users</button>
+        <div class="response" id="create-res">—</div>
+    </div>
+
+    <!-- Get -->
+    <div class="card">
+        <div class="card-title">Get User</div>
+        <div class="field">
+            <label>USER ID</label>
+            <input id="get-id" type="number" placeholder="1">
+        </div>
+        <button onclick="getUser()">GET /users/:id</button>
+        <div class="response" id="get-res">—</div>
+    </div>
+
+    <!-- Update -->
+    <div class="card">
+        <div class="card-title">Update Email</div>
+        <div class="field">
+            <label>USER ID</label>
+            <input id="update-id" type="number" placeholder="1">
+        </div>
+        <div class="field">
+            <label>NEW EMAIL</label>
+            <input id="update-email" type="email" placeholder="new@example.com">
+        </div>
+        <button onclick="updateEmail()">PUT /users/:id</button>
+        <div class="response" id="update-res">—</div>
+    </div>
+
+    <!-- Delete -->
+    <div class="card">
+        <div class="card-title">Delete User</div>
+        <div class="field">
+            <label>USER ID</label>
+            <input id="delete-id" type="number" placeholder="1">
+        </div>
+        <button class="danger" onclick="deleteUser()">DELETE /users/:id</button>
+        <div class="response" id="delete-res">—</div>
+    </div>
+
+</div>
+
+<script>
+    const BASE = '';
+
+    function setRes(id, text, ok) {
+        const el = document.getElementById(id);
+        el.textContent = text;
+        el.className = 'response ' + (ok ? 'ok' : 'err');
+    }
+
+    async function createUser() {
+        const name = document.getElementById('create-name').value.trim();
+        const email = document.getElementById('create-email').value.trim();
+        if (!name || !email) return setRes('create-res', 'name and email required', false);
+        try {
+            const r = await fetch(`${BASE}/users`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email })
+            });
+            const text = await r.text();
+            setRes('create-res', `${r.status} ${r.statusText}\n${text}`, r.ok);
+        } catch (e) { setRes('create-res', e.message, false); }
+    }
+
+    async function getUser() {
+        const id = document.getElementById('get-id').value.trim();
+        if (!id) return setRes('get-res', 'id required', false);
+        try {
+            const r = await fetch(`${BASE}/users/${id}`);
+            const text = await r.text();
+            let display = text;
+            try { display = JSON.stringify(JSON.parse(text), null, 2); } catch {}
+            setRes('get-res', `${r.status} ${r.statusText}\n${display}`, r.ok);
+        } catch (e) { setRes('get-res', e.message, false); }
+    }
+
+    async function updateEmail() {
+        const id = document.getElementById('update-id').value.trim();
+        const email = document.getElementById('update-email').value.trim();
+        if (!id || !email) return setRes('update-res', 'id and email required', false);
+        try {
+            const r = await fetch(`${BASE}/users/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+            setRes('update-res', `${r.status} ${r.statusText}`, r.ok);
+        } catch (e) { setRes('update-res', e.message, false); }
+    }
+
+    async function deleteUser() {
+        const id = document.getElementById('delete-id').value.trim();
+        if (!id) return setRes('delete-res', 'id required', false);
+        try {
+            const r = await fetch(`${BASE}/users/${id}`, { method: 'DELETE' });
+            setRes('delete-res', `${r.status} ${r.statusText}`, r.ok);
+        } catch (e) { setRes('delete-res', e.message, false); }
+    }
+</script>
+
+</body>
+</html>
