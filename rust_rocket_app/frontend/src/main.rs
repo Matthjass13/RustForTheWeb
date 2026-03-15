@@ -23,10 +23,7 @@ fn app() -> Html {
             let users = users.clone();
             let message = message.clone();
             spawn_local(async move {
-                match Request::get("http://127.0.0.1:8000/api/get_users")
-                    .send()
-                    .await
-                {
+                match Request::get("/api/get_users").send().await {
                     Ok(resp) if resp.ok() => {
                         let fetched_users: Vec<SharedUser> = resp.json().await.unwrap_or_default();
                         users.set(fetched_users);
@@ -51,7 +48,7 @@ fn app() -> Html {
             spawn_local(async move {
                 let user_data = serde_json::json!({"name": name, "email": email});
 
-                let response = Request::post("http://127.0.0.1:8000/api/add_user")
+                let response = Request::post("api/add_user")
                     .header("Content-Type", "application/json")
                     .body(user_data.to_string())
                     .unwrap()
@@ -85,13 +82,12 @@ fn app() -> Html {
 
             if let Some(id) = editing_user_id {
                 spawn_local(async move {
-                    let response =
-                        Request::put(&format!("http://127.0.0.1:8000/api/update_user/{}", id))
-                            .header("Content-Type", "application/json")
-                            .body(serde_json::to_string(&(name.as_str(), email.as_str())).unwrap())
-                            .unwrap()
-                            .send()
-                            .await;
+                    let response = Request::put(&format!("/api/update_user/{}", id))
+                        .header("Content-Type", "application/json")
+                        .body(serde_json::to_string(&(name.as_str(), email.as_str())).unwrap())
+                        .unwrap()
+                        .send()
+                        .await;
 
                     match response {
                         Ok(resp) if resp.ok() => {
@@ -117,10 +113,9 @@ fn app() -> Html {
             let get_users = get_users.clone();
 
             spawn_local(async move {
-                let response =
-                    Request::delete(&format!("http://127.0.0.1:8000/api/delete_user/{}", id))
-                        .send()
-                        .await;
+                let response = Request::delete(&format!("/api/delete_user/{}", id))
+                    .send()
+                    .await;
 
                 match response {
                     Ok(resp) if resp.ok() => {

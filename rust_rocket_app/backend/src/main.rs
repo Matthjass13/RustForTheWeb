@@ -1,11 +1,11 @@
 mod model;
+use rocket::fs::FileServer;
 use rocket::serde::json::Json;
 use rocket::{State, http::Status, response::status::Custom};
 use rocket::{tokio::task::id, *};
 use rocket_cors::{AllowedOrigins, CorsOptions};
 use sqlx::postgres::PgPoolOptions;
 use std::env;
-use tokio_postgres::{Client, NoTls};
 
 use crate::model::{NewUser, User};
 
@@ -32,7 +32,7 @@ async fn rocket() -> _ {
         "CREATE TABLE IF NOT EXISTS users (
                     id SERIAL PRIMARY KEY,
                     name VARCHAR(100) NOT NULL,
-                    email VARCHAR(100) NOT NULL)"
+                    email VARCHAR(100) NOT NULL)",
     )
     .execute(&pool)
     .await
@@ -56,6 +56,7 @@ async fn rocket() -> _ {
                 delete_user
             ],
         )
+        .mount("/", FileServer::from("static/"))
         .attach(cors)
 }
 
@@ -97,7 +98,7 @@ async fn add_user(db: &State<DbConn>, user: Json<NewUser>) -> Result<Json<User>,
         INSERT INTO users (name, email)
         VALUES ($1, $2)
         RETURNING id, name, email
-        "
+        ",
     )
     .bind(&user.name)
     .bind(&user.email)
@@ -120,7 +121,7 @@ async fn update_user(
         SET name = $1, email = $2
         WHERE id = $3
         RETURNING *
-        "
+        ",
     )
     .bind(&user.name)
     .bind(&user.email)
