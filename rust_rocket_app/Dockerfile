@@ -42,12 +42,16 @@ COPY backend/src ./backend/src
 COPY shared/src ./shared/src
 COPY frontend/src ./frontend/src
 
-RUN cargo build --target x86_64-unknown-linux-musl -p rust_rocket_app
+# ... (Keep your builders as they are, but add --release) ...
+RUN cargo build --release --target x86_64-unknown-linux-musl -p rust_rocket_app
 
-# Runtime — image encore plus légère car binaire statique
-FROM scratch AS runtime
+# Runtime
+FROM alpine:latest AS runtime
+# Add CA certificates so your app can make HTTPS requests if needed
+RUN apk add --no-cache ca-certificates
 
-COPY --from=backend-builder /app/target/x86_64-unknown-linux-musl/debug/rust_rocket_app /rust_rocket_app
+# Note the change from /debug/ to /release/
+COPY --from=backend-builder /app/target/x86_64-unknown-linux-musl/release/rust_rocket_app /rust_rocket_app
 COPY --from=frontend-builder /app/frontend/dist /static
 
 EXPOSE 8000
