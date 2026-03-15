@@ -7,9 +7,6 @@ edition = "2024"
 dotenv = "0.15.0"
 rocket = { version = "0.5.1", features = ["json"] }
 rocket_cors = { version = "0.6.0", default-features = false }
-sea-orm = { version = "1.1.19", features = ["macros", "runtime-async-std-native-tls", "sqlx-postgres"] }
 serde = { version = "1.0.228", features = ["derive"] }
 sqlx = { version = "0.8.6", features = ["macros", "postgres", "runtime-tokio-rustls"] }
-tokio = { version = "1.49.0", features = ["full"] }
-tokio-postgres = "0.7.16"
 shared = { path = "../shared" }
