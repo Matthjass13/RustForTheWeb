@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import ArticleList from "./ArticleList"; // Importez le nouveau composant
+import ArticleList from "./ArticleList";
 
 import "./index.css";
 
@@ -12,6 +12,6 @@ if (!root) {
 
 ReactDOM.createRoot(root).render(
   <React.StrictMode>
-    <ArticleList /> {/* Utilisez le composant ArticleList ici */}
+    <ArticleList />
   </React.StrictMode>,
 );
