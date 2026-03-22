@@ -1,5 +1,7 @@
 **/target
 
+**/node_modules/
+
 # Environnement
 .env
 .env.local
