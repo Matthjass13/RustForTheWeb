@@ -1,4 +1,4 @@
-# this file initialises the Axum, Python, and PostgresDB containers
+# this file initialises the Axum, Python, Rocket and PostgresDB containers
 
 services:
   postgres:
