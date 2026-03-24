@@ -1,4 +1,4 @@
-# this file initialises the Axum, Python, Rocket and PostgresDB containers
+# this file initialises the Axum, Python, Rocket, Redis and PostgresDB containers
 
 services:
   postgres:
@@ -24,6 +24,13 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:alpine
+    container_name: redis_score
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
   axum_be:
     build:
       context: ./Axum
@@ -34,6 +41,8 @@ services:
       - "3000:3000"
     environment:
       DATABASE_URL: postgres://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-secret}@postgres:5432/${POSTGRES_DB:-mydb}
+      REDIS_URL: redis://redis:6379
+      DJANGO_URL: http://python_be:8000
     depends_on:
       postgres:
         condition: service_healthy
@@ -44,6 +53,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secret}
       POSTGRES_DB: ${POSTGRES_DB:-mydb}
       POSTGRES_HOST: postgres
+      REDIS_HOST: redis
     build:
       context: ./PythonApp
       dockerfile: Dockerfile
