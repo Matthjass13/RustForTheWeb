@@ -3,7 +3,7 @@ import time
 from django.http import JsonResponse
 
 r = redis.Redis(host='redis', port=6379, db=0)
-
+# the humble yet elegant bubble sort
 
 def bubble_sort_view(request):
     data = list(range(100000, 0, -1))  # 100k reversed integers
