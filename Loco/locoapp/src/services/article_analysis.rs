@@ -15,6 +15,13 @@ pub fn analyze_articles_parallel(
         let handle = thread::spawn(move || {
             let word_count = content.split_whitespace().count();
 
+
+            // Artificial calculus to simulate a big operation
+            for _ in 0..5_000_000 {
+                let _ = 2 * 2;
+            }
+
+
             ArticleAnalysis {
                 id,
                 word_count,
@@ -32,3 +39,26 @@ pub fn analyze_articles_parallel(
 
     results
 }
+
+
+pub fn analyze_articles_sequential(
+    articles: Vec<(i32, String)>,
+) -> Vec<ArticleAnalysis> {
+    articles
+        .into_iter()
+        .map(|(id, content)| {
+            let word_count = content.split_whitespace().count();
+
+            // Artificial calculus to simulate a big operation
+            for _ in 0..5_000_000 {
+                let _ = 2 * 2;
+            }
+
+            ArticleAnalysis {
+                id,
+                word_count,
+            }
+        })
+        .collect()
+}
+

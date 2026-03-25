@@ -118,3 +118,34 @@ h1 {
 button {
   margin-left: "100px";
 }
+
+h2,
+h3 {
+  margin-left: 30px;
+}
+
+p {
+  margin-left: 30px;
+}
+
+.comparison-container {
+  display: flex;
+  gap: 40px;
+  margin-top: 20px;
+}
+
+.column {
+  flex: 1;
+}
+
+.sequential {
+  border: 2px solid #ff6b6b;
+  border-radius: 8px;
+  margin: 30px;
+}
+
+.parallel {
+  border: 2px solid #51cf66;
+  margin: 30px;
+  border-radius: 8px;
+}

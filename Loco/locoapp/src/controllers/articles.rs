@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use std::time::Instant;
 
 use crate::services::article_analysis::{analyze_articles_parallel, ArticleAnalysis};
-//use crate::models::_entities::articles::{ActiveModel, Entity, Model};
+use crate::services::article_analysis::analyze_articles_sequential;
 use crate::models::_entities::{
     articles::{ActiveModel, Entity, Model},
     comments,
@@ -23,8 +23,10 @@ pub async fn comments(
 
 #[derive(Serialize)]
 pub struct AnalysisResponse {
-    pub results: Vec<ArticleAnalysis>,
-    pub duration_ms: u128,
+    pub parallel_results: Vec<ArticleAnalysis>,
+    pub sequential_results: Vec<ArticleAnalysis>,
+    pub parallel_duration_ms: u128,
+    pub sequential_duration_ms: u128,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -93,28 +95,30 @@ pub fn routes() -> Routes {
 
 
 pub async fn analyze(State(ctx): State<AppContext>) -> Result<Response> {
-    // 1. récupérer les articles depuis la DB
     let articles = Entity::find().all(&ctx.db).await?;
 
-    // 2. transformer pour le traitement parallèle
     let data: Vec<(i32, String)> = articles
         .into_iter()
         .map(|a| (a.id, a.content.unwrap_or_default()))
         .collect();
 
+    use std::time::Instant;
 
-    let start = Instant::now();
-    let results = analyze_articles_parallel(data);
-    let duration = start.elapsed().as_millis();
+    // Sequential
+    let start_seq = Instant::now();
+    let sequential_results = analyze_articles_sequential(data.clone());
+    let sequential_duration = start_seq.elapsed().as_millis();
+
+    // Parallel
+    let start_par = Instant::now();
+    let parallel_results = analyze_articles_parallel(data);
+    let parallel_duration = start_par.elapsed().as_millis();
 
     format::json(AnalysisResponse {
-        results,
-        duration_ms: duration,
+        parallel_results,
+        sequential_results,
+        parallel_duration_ms: parallel_duration,
+        sequential_duration_ms: sequential_duration,
     })
 
-
-    // 3. lancer le traitement parallèle
-    //let results: Vec<ArticleAnalysis> = analyze_articles_parallel(data);
-
-    //format::json(results)
 }
