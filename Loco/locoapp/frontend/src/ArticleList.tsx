@@ -61,20 +61,24 @@ function ArticleList() {
       <h1>List of articles</h1>
 
       <button
-        style={{ marginLeft: "40px" }}
+        style={{ marginLeft: "70px" }}
         onClick={() => setShowForm(!showForm)}
       >
         Add an article
       </button>
+      <br />
+      {showForm && <ArticleForm onCreate={createArticle} />}
 
-      <button style={{ marginLeft: "40px" }} onClick={runAnalysis}>
+      <br />
+
+      <button style={{ marginLeft: "70px" }} onClick={runAnalysis}>
         Analyze Articles
       </button>
 
       {parallelTime !== null && sequentialTime !== null && (
         <div>
-          <h2>Performance Comparison</h2>
-          <p>
+          <h2 style={{ marginLeft: "70px" }}>Performance Comparison</h2>
+          <p style={{ marginLeft: "70px" }}>
             Parallel computation is {(sequentialTime / parallelTime).toFixed(2)}
             {""}x faster than sequential
           </p>
@@ -112,7 +116,6 @@ function ArticleList() {
       )}
 
       <br />
-      {showForm && <ArticleForm onCreate={createArticle} />}
 
       <ul>
         {articles.map((article) => (

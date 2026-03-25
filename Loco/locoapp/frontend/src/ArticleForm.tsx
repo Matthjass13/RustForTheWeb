@@ -35,7 +35,7 @@ function ArticleForm({ onCreate }: Props) {
         />
       </div>
 
-      <div style={{ marginTop: "10px" }}>
+      <div style={{ marginTop: "10px", marginLeft: "30px" }}>
         <button onClick={handleSubmit}>Add</button>
       </div>
     </div>
