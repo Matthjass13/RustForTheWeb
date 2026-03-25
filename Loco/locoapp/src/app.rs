@@ -19,6 +19,7 @@ use crate::initializers::cors::CorsInitializer;
 
 #[allow(unused_imports)]
 use crate::{controllers, models::_entities::users, tasks, workers::downloader::DownloadWorker};
+use crate::models::_entities::articles;
 
 pub struct App;
 #[async_trait]
@@ -91,9 +92,17 @@ impl Hooks for App {
         truncate_table(&ctx.db, users::Entity).await?;
         Ok(())
     }
+
+    /*
     async fn seed(ctx: &AppContext, base: &Path) -> Result<()> {
         db::seed::<users::ActiveModel>(&ctx.db, &base.join("users.yaml").display().to_string())
             .await?;
+        Ok(())
+    }*/
+
+
+    async fn seed(ctx: &AppContext, base: &Path) -> Result<()> {
+        db::seed::<articles::ActiveModel>(&ctx.db, &base.join("articles.yaml").display().to_string()).await?;
         Ok(())
     }
 }

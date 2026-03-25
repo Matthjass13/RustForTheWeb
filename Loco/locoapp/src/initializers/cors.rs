@@ -31,8 +31,6 @@ impl Initializer for CorsInitializer {
             ])
             .allow_headers(Any);
 
-        //ctx.router.lock().unwrap().layer(cors);
-
         Ok(router.layer(cors))
     }
 }
