@@ -3,7 +3,9 @@
 #![allow(clippy::unused_async)]
 use loco_rs::prelude::*;
 use serde::{Deserialize, Serialize};
+use std::time::Instant;
 
+use crate::services::article_analysis::{analyze_articles_parallel, ArticleAnalysis};
 //use crate::models::_entities::articles::{ActiveModel, Entity, Model};
 use crate::models::_entities::{
     articles::{ActiveModel, Entity, Model},
@@ -17,6 +19,12 @@ pub async fn comments(
     let item = load_item(&ctx, id).await?;
     let comments = item.find_related(comments::Entity).all(&ctx.db).await?;
     format::json(comments)
+}
+
+#[derive(Serialize)]
+pub struct AnalysisResponse {
+    pub results: Vec<ArticleAnalysis>,
+    pub duration_ms: u128,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -80,4 +88,33 @@ pub fn routes() -> Routes {
         .add("/{id}", delete(remove))
         .add("/{id}", patch(update))
         .add("/{id}/comments", get(comments))
+        .add("/analyze", get(analyze))
+}
+
+
+pub async fn analyze(State(ctx): State<AppContext>) -> Result<Response> {
+    // 1. récupérer les articles depuis la DB
+    let articles = Entity::find().all(&ctx.db).await?;
+
+    // 2. transformer pour le traitement parallèle
+    let data: Vec<(i32, String)> = articles
+        .into_iter()
+        .map(|a| (a.id, a.content.unwrap_or_default()))
+        .collect();
+
+
+    let start = Instant::now();
+    let results = analyze_articles_parallel(data);
+    let duration = start.elapsed().as_millis();
+
+    format::json(AnalysisResponse {
+        results,
+        duration_ms: duration,
+    })
+
+
+    // 3. lancer le traitement parallèle
+    //let results: Vec<ArticleAnalysis> = analyze_articles_parallel(data);
+
+    //format::json(results)
 }

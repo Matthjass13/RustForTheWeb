@@ -13,6 +13,8 @@ interface Article {
 function ArticleList() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [showForm, setShowForm] = useState(false);
+  const [analysis, setAnalysis] = useState<any[]>([]);
+  const [duration, setDuration] = useState<number | null>(null);
 
   const API_URL = "http://localhost:5150/api/articles";
 
@@ -41,6 +43,16 @@ function ArticleList() {
     fetchArticles();
   };
 
+  const runAnalysis = async () => {
+    //const response = await axios.get(`${API_URL}/analyze`);
+    //setAnalysis(response.data);
+
+    const response = await axios.get(`${API_URL}/analyze`);
+
+    setAnalysis(response.data.results);
+    setDuration(response.data.duration_ms);
+  };
+
   return (
     <div>
       <h1>List of articles</h1>
@@ -51,6 +63,24 @@ function ArticleList() {
       >
         Add an article
       </button>
+
+      <button style={{ marginLeft: "40px" }} onClick={runAnalysis}>
+        Analyze Articles (Parallel)
+      </button>
+
+      {duration !== null && <p>Execution time: {duration} ms</p>}
+      {analysis.length > 0 && (
+        <>
+          <h2>Analysis Results</h2>
+          <ul>
+            {analysis.map((a) => (
+              <li key={a.id}>
+                Article {a.id} → {a.word_count} words
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
 
       <br />
       {showForm && <ArticleForm onCreate={createArticle} />}
