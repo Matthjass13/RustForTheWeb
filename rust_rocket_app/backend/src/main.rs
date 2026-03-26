@@ -6,6 +6,8 @@ use rocket::{tokio::task::id, *};
 use rocket_cors::{AllowedOrigins, CorsOptions};
 use sqlx::postgres::PgPoolOptions;
 use std::env;
+mod fairings;
+use fairings::SecurityHeaders;
 
 use crate::model::{NewUser, User};
 
@@ -38,12 +40,19 @@ async fn rocket() -> _ {
     .await
     .expect("Impossible to create database");
 
-    let cors = CorsOptions::default()
-        .allowed_origins(AllowedOrigins::all())
-        .to_cors()
-        .expect("Error while building CORS");
+    let frontend_url = std::env::var("FRONTEND_URL").unwrap_or("http://localhost:8001".to_string());
+
+    let allowed_origins = AllowedOrigins::some_exact(&[&frontend_url]);
+
+    let cors = CorsOptions {
+        allowed_origins,
+        ..Default::default()
+    }
+    .to_cors()
+    .expect("Error while building CORS");
 
     rocket::build()
+        .attach(SecurityHeaders)
         .manage(DbConn { pool })
         .mount(
             "/api",
