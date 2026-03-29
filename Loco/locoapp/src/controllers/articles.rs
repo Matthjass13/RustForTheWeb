@@ -5,7 +5,7 @@ use loco_rs::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::time::Instant;
 
-use crate::services::article_analysis::{analyze_articles_parallel, ArticleAnalysis};
+use crate::services::article_analysis::{analyze_articles_parallel_with_timing, ArticleAnalysis};
 use crate::services::article_analysis::analyze_articles_sequential;
 use crate::models::_entities::{
     articles::{ActiveModel, Entity, Model},
@@ -25,7 +25,9 @@ pub async fn comments(
 pub struct AnalysisResponse {
     pub parallel_results: Vec<ArticleAnalysis>,
     pub sequential_results: Vec<ArticleAnalysis>,
-    pub parallel_duration_ms: u128,
+    pub parallel_total_ms: u128,
+    pub parallel_spawn_ms: u128,
+    pub parallel_execution_ms: u128,
     pub sequential_duration_ms: u128,
 }
 
@@ -110,15 +112,16 @@ pub async fn analyze(State(ctx): State<AppContext>) -> Result<Response> {
     let sequential_duration = start_seq.elapsed().as_millis();
 
     // Parallel
-    let start_par = Instant::now();
-    let parallel_results = analyze_articles_parallel(data);
-    let parallel_duration = start_par.elapsed().as_millis();
+    let parallel = analyze_articles_parallel_with_timing(data);
+
+    let parallel_total = parallel.spawn_time_ms + parallel.execution_time_ms;
 
     format::json(AnalysisResponse {
-        parallel_results,
+        parallel_results: parallel.results,
         sequential_results,
-        parallel_duration_ms: parallel_duration,
+        parallel_total_ms: parallel_total,
+        parallel_spawn_ms: parallel.spawn_time_ms,
+        parallel_execution_ms: parallel.execution_time_ms,
         sequential_duration_ms: sequential_duration,
     })
-
 }

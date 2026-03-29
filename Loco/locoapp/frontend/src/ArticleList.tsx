@@ -13,13 +13,14 @@ interface Article {
 function ArticleList() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [showForm, setShowForm] = useState(false);
-  //const [analysis, setAnalysis] = useState<any[]>([]);
-
   const [parallelAnalysis, setParallelAnalysis] = useState<any[]>([]);
   const [sequentialAnalysis, setSequentialAnalysis] = useState<any[]>([]);
   const [parallelTime, setParallelTime] = useState<number | null>(null);
   const [sequentialTime, setSequentialTime] = useState<number | null>(null);
-  //const [duration, setDuration] = useState<number | null>(null);
+  const [parallelSpawnTime, setParallelSpawnTime] = useState<number | null>(
+    null,
+  );
+  const [parallelExecTime, setParallelExecTime] = useState<number | null>(null);
 
   const API_URL = "http://localhost:5150/api/articles";
 
@@ -50,10 +51,15 @@ function ArticleList() {
 
   const runAnalysis = async () => {
     const response = await axios.get(`${API_URL}/analyze`);
+
     setParallelAnalysis(response.data.parallel_results);
     setSequentialAnalysis(response.data.sequential_results);
-    setParallelTime(response.data.parallel_duration_ms);
+
+    setParallelTime(response.data.parallel_total_ms);
     setSequentialTime(response.data.sequential_duration_ms);
+
+    setParallelSpawnTime(response.data.parallel_spawn_ms);
+    setParallelExecTime(response.data.parallel_execution_ms);
   };
 
   return (
@@ -75,45 +81,55 @@ function ArticleList() {
         Analyze Articles
       </button>
 
-      {parallelTime !== null && sequentialTime !== null && (
-        <div>
-          <h2 style={{ marginLeft: "70px" }}>Performance Comparison</h2>
-          <p style={{ marginLeft: "70px" }}>
-            Parallel computation is {(sequentialTime / parallelTime).toFixed(2)}
-            {""}x faster than sequential
-          </p>
+      {parallelTime !== null &&
+        parallelExecTime !== null &&
+        sequentialTime !== null && (
+          <div>
+            <h2 style={{ marginLeft: "70px" }}>Performance Comparison</h2>
+            <p style={{ marginLeft: "70px" }}>
+              Parallel computation is{" "}
+              {(sequentialTime / parallelTime).toFixed(2)}
+              {""}x faster than sequential
+            </p>
+            <p style={{ marginLeft: "70px" }}>
+              Parallel computation is{" "}
+              {(sequentialTime / parallelExecTime).toFixed(2)}
+              {""}x faster than sequential, threads spawn time excluded
+            </p>
 
-          <div className="comparison-container">
-            {/* 🔴 Sequential */}
-            <div className="column sequential">
-              <h3>Sequential</h3>
-              <p>{sequentialTime} ms</p>
+            <div className="comparison-container">
+              {/* 🔴 Sequential */}
+              <div className="column sequential">
+                <h3>Sequential</h3>
+                <p>{sequentialTime} ms</p>
 
-              <ul>
-                {sequentialAnalysis.map((a) => (
-                  <li key={a.id}>
-                    Article {a.id} → {a.word_count} words
-                  </li>
-                ))}
-              </ul>
-            </div>
+                <ul>
+                  {sequentialAnalysis.map((a) => (
+                    <li key={a.id}>
+                      Article {a.id} → {a.word_count} words
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-            {/* 🟢 Parallel */}
-            <div className="column parallel">
-              <h3>Parallel</h3>
-              <p>{parallelTime} ms</p>
+              {/* 🟢 Parallel */}
+              <div className="column parallel">
+                <h3>Parallel</h3>
+                <p>Total: {parallelTime} ms</p>
+                <p>Spawn: {parallelSpawnTime} ms</p>
+                <p>Execution: {parallelExecTime} ms</p>
 
-              <ul>
-                {parallelAnalysis.map((a) => (
-                  <li key={a.id}>
-                    Article {a.id} → {a.word_count} words
-                  </li>
-                ))}
-              </ul>
+                <ul>
+                  {parallelAnalysis.map((a) => (
+                    <li key={a.id}>
+                      Article {a.id} → {a.word_count} words
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
       <br />
 
