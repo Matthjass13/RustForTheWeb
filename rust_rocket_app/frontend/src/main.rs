@@ -21,6 +21,46 @@ fn app() -> Html {
     let token = use_state(|| None as Option<String>);
     let login_state = use_state(|| ("".to_string(), "".to_string()));
 
+    let register_state = use_state(|| ("".to_string(), "".to_string(), "".to_string())); // email, password, role
+    let register_message = use_state(|| "".to_string());
+
+    let register = {
+        let register_state = register_state.clone();
+        let register_message = register_message.clone();
+        Callback::from(move |_| {
+            let (email, password, role) = (*register_state).clone();
+            let register_state = register_state.clone();
+            let register_message = register_message.clone();
+
+            spawn_local(async move {
+                let body = serde_json::json!({
+                    "email": email,
+                    "password": password,
+                    "role": role
+                });
+
+                match Request::post("/api/register")
+                    .header("Content-Type", "application/json")
+                    .body(body.to_string())
+                    .unwrap()
+                    .send()
+                    .await
+                {
+                    Ok(resp) if resp.ok() => {
+                        register_message.set("Account created successfully".into());
+                        // vider les champs
+                        register_state.set(("".to_string(), "".to_string(), "".to_string()));
+                    }
+                    _ => {
+                        register_message.set("Failed to create account".into());
+                        // vider les champs en cas d'échec aussi
+                        register_state.set(("".to_string(), "".to_string(), "".to_string()));
+                    }
+                }
+            });
+        })
+    };
+
     let login = {
         let token = token.clone();
         let message = message.clone();
@@ -212,131 +252,180 @@ fn app() -> Html {
     };
 
     html! {
-        <div class="container mx-auto p-4">
-            <h1 class="text-4xl font-bold text-blue-500 mb-4">{ "User Management" }</h1>
+            <div class="container mx-auto p-4">
+                <h1 class="text-4xl font-bold text-blue-500 mb-4">{ "User Management" }</h1>
+                <div class="mb-6 p-4 border rounded bg-gray-100">
+        <h2 class="text-xl font-bold mb-2">{ "Register" }</h2>
+        <input
+            placeholder="Email"
+            value={register_state.0.clone()}
+            oninput={Callback::from({
+                let register_state = register_state.clone();
+                move |e: InputEvent| {
+                    let input = e.target_dyn_into::<web_sys::HtmlInputElement>().unwrap();
+                    register_state.set((input.value(), register_state.1.clone(), register_state.2.clone()));
+                }
+            })}
+            class="border rounded px-4 py-2 mr-2"
+        />
+        <input
+            type="password"
+            placeholder="Password"
+            value={register_state.1.clone()}
+            oninput={Callback::from({
+                let register_state = register_state.clone();
+                move |e: InputEvent| {
+                    let input = e.target_dyn_into::<web_sys::HtmlInputElement>().unwrap();
+                    register_state.set((register_state.0.clone(), input.value(), register_state.2.clone()));
+                }
+            })}
+            class="border rounded px-4 py-2 mr-2"
+        />
+        <input
+            placeholder="Role (admin/user)"
+            value={register_state.2.clone()}
+            oninput={Callback::from({
+                let register_state = register_state.clone();
+                move |e: InputEvent| {
+                    let input = e.target_dyn_into::<web_sys::HtmlInputElement>().unwrap();
+                    register_state.set((register_state.0.clone(), register_state.1.clone(), input.value()));
+                }
+            })}
+            class="border rounded px-4 py-2 mr-2"
+        />
+        <button
+            onclick={register}
+            class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded"
+        >
+            { "Register" }
+        </button>
+        if !register_message.is_empty() {
+            <p class="text-green-500 mt-2">{ &*register_message }</p>
+        }
+    </div>
 
-            // Section login
-            {
-                if token.is_none() {
-                    html! {
-                        <div class="mb-6 p-4 border rounded bg-gray-50">
-                            <h2 class="text-xl font-bold mb-2">{ "Login" }</h2>
-                            <input
-                                placeholder="Email"
-                                value={login_state.0.clone()}
-                                oninput={Callback::from({
-                                    let login_state = login_state.clone();
-                                    move |e: InputEvent| {
-                                        let input = e.target_dyn_into::<web_sys::HtmlInputElement>().unwrap();
-                                        login_state.set((input.value(), login_state.1.clone()));
-                                    }
-                                })}
-                                class="border rounded px-4 py-2 mr-2"
-                            />
-                            <input
-                                type="password"
-                                placeholder="Password"
-                                value={login_state.1.clone()}
-                                oninput={Callback::from({
-                                    let login_state = login_state.clone();
-                                    move |e: InputEvent| {
-                                        let input = e.target_dyn_into::<web_sys::HtmlInputElement>().unwrap();
-                                        login_state.set((login_state.0.clone(), input.value()));
-                                    }
-                                })}
-                                class="border rounded px-4 py-2 mr-2"
-                            />
-                            <button
-                                onclick={login}
-                                class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-                            >
-                                { "Login" }
-                            </button>
-                        </div>
-                    }
-                } else {
-                    html! {
-                        <div class="mb-6 p-4 border rounded bg-green-50">
-                            <p class="text-green-700 font-semibold">{ "✅ Logged in" }</p>
-                            <button
-                                onclick={logout}
-                                class="mt-2 bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded"
-                            >
-                                { "Logout" }
-                            </button>
-                        </div>
+                // Section login
+                {
+                    if token.is_none() {
+                        html! {
+                            <div class="mb-6 p-4 border rounded bg-gray-50">
+                                <h2 class="text-xl font-bold mb-2">{ "Login" }</h2>
+                                <input
+                                    placeholder="Email"
+                                    value={login_state.0.clone()}
+                                    oninput={Callback::from({
+                                        let login_state = login_state.clone();
+                                        move |e: InputEvent| {
+                                            let input = e.target_dyn_into::<web_sys::HtmlInputElement>().unwrap();
+                                            login_state.set((input.value(), login_state.1.clone()));
+                                        }
+                                    })}
+                                    class="border rounded px-4 py-2 mr-2"
+                                />
+                                <input
+                                    type="password"
+                                    placeholder="Password"
+                                    value={login_state.1.clone()}
+                                    oninput={Callback::from({
+                                        let login_state = login_state.clone();
+                                        move |e: InputEvent| {
+                                            let input = e.target_dyn_into::<web_sys::HtmlInputElement>().unwrap();
+                                            login_state.set((login_state.0.clone(), input.value()));
+                                        }
+                                    })}
+                                    class="border rounded px-4 py-2 mr-2"
+                                />
+                                <button
+                                    onclick={login}
+                                    class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                                >
+                                    { "Login" }
+                                </button>
+                            </div>
+                        }
+                    } else {
+                        html! {
+                            <div class="mb-6 p-4 border rounded bg-green-50">
+                                <p class="text-green-700 font-semibold">{ "✅ Logged in" }</p>
+                                <button
+                                    onclick={logout}
+                                    class="mt-2 bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded"
+                                >
+                                    { "Logout" }
+                                </button>
+                            </div>
+                        }
                     }
                 }
-            }
 
-            // Section gestion users
-            <div class="mb-4">
-                <input
-                    placeholder="Name"
-                    value={user_state.0.clone()}
-                    oninput={Callback::from({
-                        let user_state = user_state.clone();
-                        move |e: InputEvent| {
-                            let input = e.target_dyn_into::<web_sys::HtmlInputElement>().unwrap();
-                            user_state.set((input.value(), user_state.1.clone(), user_state.2));
-                        }
-                    })}
-                    class="border rounded px-4 py-2 mr-2"
-                />
-                <input
-                    placeholder="Email"
-                    value={user_state.1.clone()}
-                    oninput={Callback::from({
-                        let user_state = user_state.clone();
-                        move |e: InputEvent| {
-                            let input = e.target_dyn_into::<web_sys::HtmlInputElement>().unwrap();
-                            user_state.set((user_state.0.clone(), input.value(), user_state.2));
-                        }
-                    })}
-                    class="border rounded px-4 py-2 mr-2"
-                />
+                // Section gestion users
+                <div class="mb-4">
+                    <input
+                        placeholder="Name"
+                        value={user_state.0.clone()}
+                        oninput={Callback::from({
+                            let user_state = user_state.clone();
+                            move |e: InputEvent| {
+                                let input = e.target_dyn_into::<web_sys::HtmlInputElement>().unwrap();
+                                user_state.set((input.value(), user_state.1.clone(), user_state.2));
+                            }
+                        })}
+                        class="border rounded px-4 py-2 mr-2"
+                    />
+                    <input
+                        placeholder="Email"
+                        value={user_state.1.clone()}
+                        oninput={Callback::from({
+                            let user_state = user_state.clone();
+                            move |e: InputEvent| {
+                                let input = e.target_dyn_into::<web_sys::HtmlInputElement>().unwrap();
+                                user_state.set((user_state.0.clone(), input.value(), user_state.2));
+                            }
+                        })}
+                        class="border rounded px-4 py-2 mr-2"
+                    />
+                    <button
+                        onclick={if user_state.2.is_some() { update_user.clone() } else { create_user.clone() }}
+                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                    >
+                        { if user_state.2.is_some() { "Update User" } else { "Create User" } }
+                    </button>
+                    if !message.is_empty() {
+                        <p class="text-green-500 mt-2">{ &*message }</p>
+                    }
+                </div>
+
                 <button
-                    onclick={if user_state.2.is_some() { update_user.clone() } else { create_user.clone() }}
-                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                    onclick={get_users.reform(|_| ())}
+                    class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mb-4"
                 >
-                    { if user_state.2.is_some() { "Update User" } else { "Create User" } }
+                    { "Fetch User List" }
                 </button>
-                if !message.is_empty() {
-                    <p class="text-green-500 mt-2">{ &*message }</p>
-                }
+
+                <h2 class="text-2xl font-bold text-gray-700 mb-2">{ "User List" }</h2>
+
+                <ul class="list-disc pl-5">
+                    { for (*users).iter().map(|user| {
+                        let user_id = user.id;
+                        html! {
+                            <li class="mb-2">
+                                <span class="font-semibold">{ format!("ID: {}, Name: {}, Email: {}", user.id.unwrap_or(0), user.name, user.email) }</span>
+                                <button
+                                    onclick={delete_user.clone().reform(move |_| user_id.unwrap_or(0))}
+                                    class="ml-4 bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
+                                >
+                                    { "Delete" }
+                                </button>
+                                <button
+                                    onclick={edit_user.clone().reform(move |_| user_id.unwrap_or(0))}
+                                    class="ml-4 bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded"
+                                >
+                                    { "Edit" }
+                                </button>
+                            </li>
+                        }
+                    })}
+                </ul>
             </div>
-
-            <button
-                onclick={get_users.reform(|_| ())}
-                class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mb-4"
-            >
-                { "Fetch User List" }
-            </button>
-
-            <h2 class="text-2xl font-bold text-gray-700 mb-2">{ "User List" }</h2>
-
-            <ul class="list-disc pl-5">
-                { for (*users).iter().map(|user| {
-                    let user_id = user.id;
-                    html! {
-                        <li class="mb-2">
-                            <span class="font-semibold">{ format!("ID: {}, Name: {}, Email: {}", user.id.unwrap_or(0), user.name, user.email) }</span>
-                            <button
-                                onclick={delete_user.clone().reform(move |_| user_id.unwrap_or(0))}
-                                class="ml-4 bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
-                            >
-                                { "Delete" }
-                            </button>
-                            <button
-                                onclick={edit_user.clone().reform(move |_| user_id.unwrap_or(0))}
-                                class="ml-4 bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded"
-                            >
-                                { "Edit" }
-                            </button>
-                        </li>
-                    }
-                })}
-            </ul>
-        </div>
-    }
+        }
 }
