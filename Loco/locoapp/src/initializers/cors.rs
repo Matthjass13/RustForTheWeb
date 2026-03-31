@@ -16,7 +16,7 @@ impl Initializer for CorsInitializer {
     async fn after_routes(
         &self, 
         router:Router,
-        ctx: &AppContext,
+        _ctx: &AppContext,
     ) -> Result<Router> {
 
 

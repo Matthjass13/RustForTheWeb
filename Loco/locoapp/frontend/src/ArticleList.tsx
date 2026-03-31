@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import ArticleItem from "./ArticleItem";
 import ArticleForm from "./ArticleForm";
+import LoginForm from "./LoginForm";
 
 /*
 This component indicates how the home page should be displayed with all the articles.
@@ -14,6 +15,9 @@ interface Article {
 }
 
 function ArticleList() {
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    !!localStorage.getItem("token"), // ← true si token déjà présent
+  );
   const [articles, setArticles] = useState<Article[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [sequentialAnalysis, setSequentialAnalysis] = useState<any[]>([]);
@@ -65,9 +69,23 @@ function ArticleList() {
     setParallelExecTime(response.data.parallel_execution_ms);
   };
 
+  const logout = () => {
+    localStorage.removeItem("token");
+    setIsLoggedIn(false);
+  };
+
   return (
     <div>
       <h1>List of articles</h1>
+      {!isLoggedIn ? (
+        <LoginForm onLogin={() => setIsLoggedIn(true)} />
+      ) : (
+        <button style={{ marginLeft: "5px" }} onClick={logout}>
+          Logout
+        </button>
+      )}
+
+      <br />
 
       {/* Form to add a new article. Hidden when validated. */}
       <button

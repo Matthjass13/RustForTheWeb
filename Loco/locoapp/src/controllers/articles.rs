@@ -3,7 +3,6 @@
 #![allow(clippy::unused_async)]
 use loco_rs::prelude::*;
 use serde::{Deserialize, Serialize};
-use std::time::Instant;
 
 
 /*
@@ -17,6 +16,7 @@ use crate::models::_entities::{
     articles::{ActiveModel, Entity, Model},
     comments,
 };
+use crate::models::_entities::users;
 
 pub async fn comments(
     Path(id): Path<i32>,
@@ -61,6 +61,7 @@ pub async fn list(State(ctx): State<AppContext>) -> Result<Response> {
 }
 
 pub async fn add(State(ctx): State<AppContext>, Json(params): Json<Params>) -> Result<Response> {
+    auth: auth::JWT,
     let mut item: ActiveModel = Default::default();
     params.update(&mut item);
     let item = item.insert(&ctx.db).await?;
@@ -68,6 +69,7 @@ pub async fn add(State(ctx): State<AppContext>, Json(params): Json<Params>) -> R
 }
 
 pub async fn update(
+    auth: auth::JWT,
     Path(id): Path<i32>,
     State(ctx): State<AppContext>,
     Json(params): Json<Params>,
@@ -81,8 +83,13 @@ pub async fn update(
     format::json(item)
 }
 
-pub async fn remove(Path(id): Path<i32>, State(ctx): State<AppContext>) -> Result<Response> {
+pub async fn remove(
+    auth: auth::JWT,
+    
+    Path(id): Path<i32>, State(ctx): State<AppContext>) -> Result<Response> {
     load_item(&ctx, id).await?.delete(&ctx.db).await?;
+
+    // Returns an empty http response
     format::empty()
 }
 
