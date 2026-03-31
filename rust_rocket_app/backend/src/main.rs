@@ -1,3 +1,5 @@
+mod auth;
+mod guards;
 mod model;
 use rocket::fs::FileServer;
 use rocket::serde::json::Json;
@@ -7,8 +9,10 @@ use rocket_cors::{AllowedOrigins, CorsOptions};
 use sqlx::postgres::PgPoolOptions;
 use std::env;
 mod fairings;
+use auth::{login, register};
 use fairings::SecurityHeaders;
 
+use crate::guards::AdminUser;
 use crate::model::{NewUser, User};
 
 struct DbConn {
@@ -62,7 +66,9 @@ async fn rocket() -> _ {
                 get_one_user,
                 add_user,
                 update_user,
-                delete_user
+                delete_user,
+                register,
+                login
             ],
         )
         .mount("/", FileServer::from("static/"))
@@ -123,6 +129,7 @@ async fn update_user(
     db: &State<DbConn>,
     id: i32,
     user: Json<NewUser>,
+    _admin: AdminUser,
 ) -> Result<Json<User>, String> {
     let updated_user = sqlx::query_as(
         "
@@ -143,7 +150,7 @@ async fn update_user(
 }
 
 #[delete("/delete_user/<id>")]
-async fn delete_user(db: &State<DbConn>, id: i32) -> Result<Status, String> {
+async fn delete_user(db: &State<DbConn>, id: i32, _admin: AdminUser) -> Result<Status, String> {
     let Dbstatus = sqlx::query("DELETE FROM users WHERE id = $1")
         .bind(id)
         .execute(&db.pool)

@@ -10,3 +10,5 @@ rocket_cors = { version = "0.6.0", default-features = false }
 serde = { version = "1.0.228", features = ["derive"] }
 sqlx = { version = "0.8.6", features = ["macros", "postgres", "runtime-tokio-rustls"] }
 shared = { path = "../shared" }
+argon2 = "0.5.3"
+jsonwebtoken = { version = "10.3.0", features = ["use_pem", "rust_crypto"] }

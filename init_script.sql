@@ -12,6 +12,20 @@ INSERT INTO users (name, email) VALUES
     ('Hugo', 'hugo@example.com'),
     ('Matthias', 'matthias@example.com');
 
+-- code for testing authentication
+CREATE TABLE IF NOT EXISTS rocket_users (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS rocket_accounts (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    role VARCHAR(10) NOT NULL DEFAULT 'user'
+);
+
 -- code for making giant test array 
 CREATE TABLE sorting_test (
     id serial PRIMARY KEY,
