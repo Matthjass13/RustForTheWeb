@@ -94,13 +94,20 @@ impl Hooks for App {
     }
 
     /*
+    This function could have be useful if we needed to seed users.
+    We didn't need users in this poc so we commented this function.
+    */
+    /*
     async fn seed(ctx: &AppContext, base: &Path) -> Result<()> {
         db::seed::<users::ActiveModel>(&ctx.db, &base.join("users.yaml").display().to_string())
             .await?;
         Ok(())
     }*/
 
-
+    /* 
+    Here, we configure the seed function to retrieve data
+    from the articles.yaml file and use it to seed the database with 100 articles.
+     */
     async fn seed(ctx: &AppContext, base: &Path) -> Result<()> {
         db::seed::<articles::ActiveModel>(&ctx.db, &base.join("articles.yaml").display().to_string()).await?;
         Ok(())

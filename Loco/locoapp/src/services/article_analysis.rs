@@ -17,12 +17,12 @@ pub fn analyze_articles_parallel_with_timing(
     articles: Vec<(i32, String)>,
 ) -> ParallelTiming {
     let mut handles = vec![];
-s
+
     let start_spawn = Instant::now();
 
     for (id, content) in articles {
         let handle = thread::spawn(move || {
-            let mut word_count = 0;
+            let word_count = content.split_whitespace().count();
 
 
             // Artificial calculus to simulate a big operation

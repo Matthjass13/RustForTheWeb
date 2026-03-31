@@ -155,3 +155,23 @@ p {
   margin-right: 70px;
   border-radius: 8px;
 }
+
+.parallel-times {
+  display: flex;
+  gap: 10px;
+}
+
+.delete-button {
+  background-color: red;
+  color: white;
+  margin-left: 5px;
+  cursor: pointer;
+}
+
+button {
+  cursor: pointer;
+}
+
+.delete-button:hover {
+  background-color: darkred;
+}

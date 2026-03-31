@@ -73,3 +73,428 @@
   content: "Quantum computing uses the principles of quantum physics to solve complex problems much faster than classical computers. Potential applications include cryptography, optimization, and scientific research. While still experimental, companies like IBM and Google are making significant progress. Challenges include qubit stability and developing suitable algorithms. Quantum computing could revolutionize the IT industry in the coming decades."
   created_at: "2026-03-15T08:16:35Z"
   updated_at: "2026-03-15T08:16:35Z"
+- id: 16
+  title: "The Future of Generative Artificial Intelligence"
+  content: "Generative artificial intelligence is transforming the way businesses create content and automate complex processes. Advanced models can produce text, images, and even code within seconds. This technology also raises ethical questions regarding intellectual property and misinformation. IT specialists must adapt quickly to integrate these tools responsibly. Generative AI promises to redefine the digital landscape in the coming years."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 17
+  title: "Cybersecurity Against Modern Threats"
+  content: "Cyberattacks are becoming increasingly sophisticated, targeting both large companies and individuals. Ransomware and phishing remain among the most common threats. IT experts recommend a multi-layered approach including firewalls, antivirus software, and employee training. Technologies like multi-factor authentication are becoming standard to enhance security. Cybersecurity is no longer optional but a necessity for all organizations."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 18
+  title: "Cloud Computing and Its Benefits for Businesses"
+  content: "Cloud computing allows companies to store and process data without investing in expensive infrastructure. Cloud solutions offer flexibility, scalability, and accessibility from anywhere in the world. Giants like AWS, Azure, and Google Cloud dominate this ever-growing market. Migrating to the cloud requires careful planning to avoid service interruptions. With the cloud, businesses can focus on innovation rather than IT maintenance."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 19
+  title: "The Growing Role of Edge Computing"
+  content: "Edge computing processes data directly at the source, reducing latency and load on central servers. This approach is especially useful for connected devices and real-time critical applications. It also enhances data security by limiting the transfer of sensitive information to the cloud. Companies adopting edge computing gain in performance and responsiveness. It is a key evolution for modern IT infrastructures."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 20
+  title: "The Rise of DevOps in Software Development"
+  content: "DevOps combines development and operations to accelerate software delivery. This methodology promotes automation of testing, continuous deployment, and closer collaboration between teams. Companies adopting DevOps see significant gains in productivity and code quality. Tools like Jenkins, Docker, and Kubernetes have become essential in this environment. DevOps changes IT culture by placing agility and efficiency at the core of software development."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 21
+  title: "Why Rust is gaining popularity in backend development"
+  content: "Rust is becoming increasingly popular for backend development thanks to its strong focus on safety and performance. Unlike many traditional languages, Rust prevents common programming errors such as null pointer dereferencing or data races at compile time. One of the most appreciated features is the ownership system, which ensures memory safety without relying on a garbage collector. This allows applications to run efficiently while avoiding memory leaks. Because of these advantages, Rust is now used in many modern infrastructures and high-performance services."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 22
+  title: "Building modern web applications with React"
+  content: "React has become one of the most widely used libraries for building modern web interfaces. Its component-based architecture allows developers to split the UI into small reusable pieces, making applications easier to maintain and extend. By managing the state of components efficiently, React enables dynamic interfaces that update automatically when data changes. This makes it particularly well suited for building interactive applications such as dashboards, social platforms, or content management systems. When combined with a backend API, React can power complete full-stack applications."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 23
+  title: "Introduction to Rust for web developers"
+  content: "Rust is a modern programming language focused on safety and performance. For web developers, Rust offers the ability to build fast backend services while avoiding common bugs related to memory management. With frameworks like Axum or Actix, Rust is increasingly used to build APIs and high-performance web applications."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 24
+  title: "Understanding ownership in Rust"
+  content: One of the most unique aspects of Rust is its ownership model. Ownership ensures that each value has a single owner at any time, preventing memory leaks and race conditions. Although it may seem complex at first, understanding ownership is key to writing safe and efficient Rust code."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 25
+  title: "Building user interfaces with React"
+  content: "React is a JavaScript library designed for building interactive user interfaces. Its component-based architecture allows developers to split complex interfaces into small reusable pieces. By managing component state efficiently, React applications can dynamically update the UI without reloading the entire page."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 26
+  title: "The Future of Generative Artificial Intelligence"
+  content: "Generative artificial intelligence is transforming the way businesses create content and automate complex processes. Advanced models can produce text, images, and even code within seconds. This technology also raises ethical questions regarding intellectual property and misinformation. IT specialists must adapt quickly to integrate these tools responsibly. Generative AI promises to redefine the digital landscape in the coming years."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 27
+  title: "Cybersecurity Against Modern Threats"
+  content: "Cyberattacks are becoming increasingly sophisticated, targeting both large companies and individuals. Ransomware and phishing remain among the most common threats. IT experts recommend a multi-layered approach including firewalls, antivirus software, and employee training. Technologies like multi-factor authentication are becoming standard to enhance security. Cybersecurity is no longer optional but a necessity for all organizations."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 28
+  title: "Cloud Computing and Its Benefits for Businesses"
+  content: "Cloud computing allows companies to store and process data without investing in expensive infrastructure. Cloud solutions offer flexibility, scalability, and accessibility from anywhere in the world. Giants like AWS, Azure, and Google Cloud dominate this ever-growing market. Migrating to the cloud requires careful planning to avoid service interruptions. With the cloud, businesses can focus on innovation rather than IT maintenance."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 29
+  title: "The Growing Role of Edge Computing"
+  content: "Edge computing processes data directly at the source, reducing latency and load on central servers. This approach is especially useful for connected devices and real-time critical applications. It also enhances data security by limiting the transfer of sensitive information to the cloud. Companies adopting edge computing gain in performance and responsiveness. It is a key evolution for modern IT infrastructures."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 30
+  title: "The Rise of DevOps in Software Development"
+  content: "DevOps combines development and operations to accelerate software delivery. This methodology promotes automation of testing, continuous deployment, and closer collaboration between teams. Companies adopting DevOps see significant gains in productivity and code quality. Tools like Jenkins, Docker, and Kubernetes have become essential in this environment. DevOps changes IT culture by placing agility and efficiency at the core of software development."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 31
+  title: "Blockchain Beyond Cryptocurrencies"
+  content: "Blockchain is often associated with cryptocurrencies, but its applications go much further. It can secure transactions, manage smart contracts, and ensure product traceability. Sectors like healthcare, logistics, and finance are exploring these possibilities to improve transparency. Adoption is still hindered by technical complexity and regulatory challenges. However, blockchain could become a cornerstone of global digital infrastructure."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 32
+  title: "The Internet of Things (IoT) and the Transformation of Cities"
+  content: "IoT connects a wide range of devices to collect and analyze data in real-time. In smart cities, it helps optimize traffic, energy, and security management. Smart sensors and devices generate enormous volumes of data to be leveraged. Security and privacy remain major challenges. IoT promises to make our cities more efficient and responsive to citizens' needs."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 33
+  title: "Machine Learning for Predictive Analytics"
+  content: "Machine learning enables companies to anticipate trends and behaviors based on historical data. Predictive models assist in marketing, finance, and industrial maintenance. Data quality and algorithm selection are critical factors for obtaining reliable results. This technology changes the way strategic decisions are made. Predictive analytics is becoming a key tool for staying competitive in the digital economy."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 34
+  title: "The Role of DevSecOps in Software Security"
+  content: "DevSecOps integrates security from the early stages of software development. This approach allows vulnerabilities to be detected sooner and reduces the risk of attacks. Automated security testing and continuous monitoring are central to DevSecOps. IT teams must train developers in best cybersecurity practices. DevSecOps transforms how companies design and protect their applications."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 35
+  title: "Quantum Computing: A Step Toward the Unimaginable"
+  content: "Quantum computing uses the principles of quantum physics to solve complex problems much faster than classical computers. Potential applications include cryptography, optimization, and scientific research. While still experimental, companies like IBM and Google are making significant progress. Challenges include qubit stability and developing suitable algorithms. Quantum computing could revolutionize the IT industry in the coming decades."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 36
+  title: "The Future of Generative Artificial Intelligence"
+  content: "Generative artificial intelligence is transforming the way businesses create content and automate complex processes. Advanced models can produce text, images, and even code within seconds. This technology also raises ethical questions regarding intellectual property and misinformation. IT specialists must adapt quickly to integrate these tools responsibly. Generative AI promises to redefine the digital landscape in the coming years."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 37
+  title: "Cybersecurity Against Modern Threats"
+  content: "Cyberattacks are becoming increasingly sophisticated, targeting both large companies and individuals. Ransomware and phishing remain among the most common threats. IT experts recommend a multi-layered approach including firewalls, antivirus software, and employee training. Technologies like multi-factor authentication are becoming standard to enhance security. Cybersecurity is no longer optional but a necessity for all organizations."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 38
+  title: "Cloud Computing and Its Benefits for Businesses"
+  content: "Cloud computing allows companies to store and process data without investing in expensive infrastructure. Cloud solutions offer flexibility, scalability, and accessibility from anywhere in the world. Giants like AWS, Azure, and Google Cloud dominate this ever-growing market. Migrating to the cloud requires careful planning to avoid service interruptions. With the cloud, businesses can focus on innovation rather than IT maintenance."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 39
+  title: "The Growing Role of Edge Computing"
+  content: "Edge computing processes data directly at the source, reducing latency and load on central servers. This approach is especially useful for connected devices and real-time critical applications. It also enhances data security by limiting the transfer of sensitive information to the cloud. Companies adopting edge computing gain in performance and responsiveness. It is a key evolution for modern IT infrastructures."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 40
+  title: "The Rise of DevOps in Software Development"
+  content: "DevOps combines development and operations to accelerate software delivery. This methodology promotes automation of testing, continuous deployment, and closer collaboration between teams. Companies adopting DevOps see significant gains in productivity and code quality. Tools like Jenkins, Docker, and Kubernetes have become essential in this environment. DevOps changes IT culture by placing agility and efficiency at the core of software development."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 41
+  title: "Why Rust is gaining popularity in backend development"
+  content: "Rust is becoming increasingly popular for backend development thanks to its strong focus on safety and performance. Unlike many traditional languages, Rust prevents common programming errors such as null pointer dereferencing or data races at compile time. One of the most appreciated features is the ownership system, which ensures memory safety without relying on a garbage collector. This allows applications to run efficiently while avoiding memory leaks. Because of these advantages, Rust is now used in many modern infrastructures and high-performance services."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 42
+  title: "Building modern web applications with React"
+  content: "React has become one of the most widely used libraries for building modern web interfaces. Its component-based architecture allows developers to split the UI into small reusable pieces, making applications easier to maintain and extend. By managing the state of components efficiently, React enables dynamic interfaces that update automatically when data changes. This makes it particularly well suited for building interactive applications such as dashboards, social platforms, or content management systems. When combined with a backend API, React can power complete full-stack applications."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 43
+  title: "Introduction to Rust for web developers"
+  content: "Rust is a modern programming language focused on safety and performance. For web developers, Rust offers the ability to build fast backend services while avoiding common bugs related to memory management. With frameworks like Axum or Actix, Rust is increasingly used to build APIs and high-performance web applications."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 44
+  title: "Understanding ownership in Rust"
+  content: One of the most unique aspects of Rust is its ownership model. Ownership ensures that each value has a single owner at any time, preventing memory leaks and race conditions. Although it may seem complex at first, understanding ownership is key to writing safe and efficient Rust code."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 45
+  title: "Building user interfaces with React"
+  content: "React is a JavaScript library designed for building interactive user interfaces. Its component-based architecture allows developers to split complex interfaces into small reusable pieces. By managing component state efficiently, React applications can dynamically update the UI without reloading the entire page."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 46
+  title: "The Future of Generative Artificial Intelligence"
+  content: "Generative artificial intelligence is transforming the way businesses create content and automate complex processes. Advanced models can produce text, images, and even code within seconds. This technology also raises ethical questions regarding intellectual property and misinformation. IT specialists must adapt quickly to integrate these tools responsibly. Generative AI promises to redefine the digital landscape in the coming years."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 47
+  title: "Cybersecurity Against Modern Threats"
+  content: "Cyberattacks are becoming increasingly sophisticated, targeting both large companies and individuals. Ransomware and phishing remain among the most common threats. IT experts recommend a multi-layered approach including firewalls, antivirus software, and employee training. Technologies like multi-factor authentication are becoming standard to enhance security. Cybersecurity is no longer optional but a necessity for all organizations."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 48
+  title: "Cloud Computing and Its Benefits for Businesses"
+  content: "Cloud computing allows companies to store and process data without investing in expensive infrastructure. Cloud solutions offer flexibility, scalability, and accessibility from anywhere in the world. Giants like AWS, Azure, and Google Cloud dominate this ever-growing market. Migrating to the cloud requires careful planning to avoid service interruptions. With the cloud, businesses can focus on innovation rather than IT maintenance."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 49
+  title: "The Growing Role of Edge Computing"
+  content: "Edge computing processes data directly at the source, reducing latency and load on central servers. This approach is especially useful for connected devices and real-time critical applications. It also enhances data security by limiting the transfer of sensitive information to the cloud. Companies adopting edge computing gain in performance and responsiveness. It is a key evolution for modern IT infrastructures."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 50
+  title: "The Rise of DevOps in Software Development"
+  content: "DevOps combines development and operations to accelerate software delivery. This methodology promotes automation of testing, continuous deployment, and closer collaboration between teams. Companies adopting DevOps see significant gains in productivity and code quality. Tools like Jenkins, Docker, and Kubernetes have become essential in this environment. DevOps changes IT culture by placing agility and efficiency at the core of software development."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 51
+  title: "Blockchain Beyond Cryptocurrencies"
+  content: "Blockchain is often associated with cryptocurrencies, but its applications go much further. It can secure transactions, manage smart contracts, and ensure product traceability. Sectors like healthcare, logistics, and finance are exploring these possibilities to improve transparency. Adoption is still hindered by technical complexity and regulatory challenges. However, blockchain could become a cornerstone of global digital infrastructure."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 52
+  title: "The Internet of Things (IoT) and the Transformation of Cities"
+  content: "IoT connects a wide range of devices to collect and analyze data in real-time. In smart cities, it helps optimize traffic, energy, and security management. Smart sensors and devices generate enormous volumes of data to be leveraged. Security and privacy remain major challenges. IoT promises to make our cities more efficient and responsive to citizens' needs."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 53
+  title: "Machine Learning for Predictive Analytics"
+  content: "Machine learning enables companies to anticipate trends and behaviors based on historical data. Predictive models assist in marketing, finance, and industrial maintenance. Data quality and algorithm selection are critical factors for obtaining reliable results. This technology changes the way strategic decisions are made. Predictive analytics is becoming a key tool for staying competitive in the digital economy."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 54
+  title: "The Role of DevSecOps in Software Security"
+  content: "DevSecOps integrates security from the early stages of software development. This approach allows vulnerabilities to be detected sooner and reduces the risk of attacks. Automated security testing and continuous monitoring are central to DevSecOps. IT teams must train developers in best cybersecurity practices. DevSecOps transforms how companies design and protect their applications."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 55
+  title: "Quantum Computing: A Step Toward the Unimaginable"
+  content: "Quantum computing uses the principles of quantum physics to solve complex problems much faster than classical computers. Potential applications include cryptography, optimization, and scientific research. While still experimental, companies like IBM and Google are making significant progress. Challenges include qubit stability and developing suitable algorithms. Quantum computing could revolutionize the IT industry in the coming decades."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 56
+  title: "The Future of Generative Artificial Intelligence"
+  content: "Generative artificial intelligence is transforming the way businesses create content and automate complex processes. Advanced models can produce text, images, and even code within seconds. This technology also raises ethical questions regarding intellectual property and misinformation. IT specialists must adapt quickly to integrate these tools responsibly. Generative AI promises to redefine the digital landscape in the coming years."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 57
+  title: "Cybersecurity Against Modern Threats"
+  content: "Cyberattacks are becoming increasingly sophisticated, targeting both large companies and individuals. Ransomware and phishing remain among the most common threats. IT experts recommend a multi-layered approach including firewalls, antivirus software, and employee training. Technologies like multi-factor authentication are becoming standard to enhance security. Cybersecurity is no longer optional but a necessity for all organizations."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 58
+  title: "Cloud Computing and Its Benefits for Businesses"
+  content: "Cloud computing allows companies to store and process data without investing in expensive infrastructure. Cloud solutions offer flexibility, scalability, and accessibility from anywhere in the world. Giants like AWS, Azure, and Google Cloud dominate this ever-growing market. Migrating to the cloud requires careful planning to avoid service interruptions. With the cloud, businesses can focus on innovation rather than IT maintenance."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 59
+  title: "The Growing Role of Edge Computing"
+  content: "Edge computing processes data directly at the source, reducing latency and load on central servers. This approach is especially useful for connected devices and real-time critical applications. It also enhances data security by limiting the transfer of sensitive information to the cloud. Companies adopting edge computing gain in performance and responsiveness. It is a key evolution for modern IT infrastructures."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 60
+  title: "The Rise of DevOps in Software Development"
+  content: "DevOps combines development and operations to accelerate software delivery. This methodology promotes automation of testing, continuous deployment, and closer collaboration between teams. Companies adopting DevOps see significant gains in productivity and code quality. Tools like Jenkins, Docker, and Kubernetes have become essential in this environment. DevOps changes IT culture by placing agility and efficiency at the core of software development."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 61
+  title: "Why Rust is gaining popularity in backend development"
+  content: "Rust is becoming increasingly popular for backend development thanks to its strong focus on safety and performance. Unlike many traditional languages, Rust prevents common programming errors such as null pointer dereferencing or data races at compile time. One of the most appreciated features is the ownership system, which ensures memory safety without relying on a garbage collector. This allows applications to run efficiently while avoiding memory leaks. Because of these advantages, Rust is now used in many modern infrastructures and high-performance services."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 62
+  title: "Building modern web applications with React"
+  content: "React has become one of the most widely used libraries for building modern web interfaces. Its component-based architecture allows developers to split the UI into small reusable pieces, making applications easier to maintain and extend. By managing the state of components efficiently, React enables dynamic interfaces that update automatically when data changes. This makes it particularly well suited for building interactive applications such as dashboards, social platforms, or content management systems. When combined with a backend API, React can power complete full-stack applications."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 63
+  title: "Introduction to Rust for web developers"
+  content: "Rust is a modern programming language focused on safety and performance. For web developers, Rust offers the ability to build fast backend services while avoiding common bugs related to memory management. With frameworks like Axum or Actix, Rust is increasingly used to build APIs and high-performance web applications."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 64
+  title: "Understanding ownership in Rust"
+  content: One of the most unique aspects of Rust is its ownership model. Ownership ensures that each value has a single owner at any time, preventing memory leaks and race conditions. Although it may seem complex at first, understanding ownership is key to writing safe and efficient Rust code."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 65
+  title: "Building user interfaces with React"
+  content: "React is a JavaScript library designed for building interactive user interfaces. Its component-based architecture allows developers to split complex interfaces into small reusable pieces. By managing component state efficiently, React applications can dynamically update the UI without reloading the entire page."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 66
+  title: "The Future of Generative Artificial Intelligence"
+  content: "Generative artificial intelligence is transforming the way businesses create content and automate complex processes. Advanced models can produce text, images, and even code within seconds. This technology also raises ethical questions regarding intellectual property and misinformation. IT specialists must adapt quickly to integrate these tools responsibly. Generative AI promises to redefine the digital landscape in the coming years."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 67
+  title: "Cybersecurity Against Modern Threats"
+  content: "Cyberattacks are becoming increasingly sophisticated, targeting both large companies and individuals. Ransomware and phishing remain among the most common threats. IT experts recommend a multi-layered approach including firewalls, antivirus software, and employee training. Technologies like multi-factor authentication are becoming standard to enhance security. Cybersecurity is no longer optional but a necessity for all organizations."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 68
+  title: "Cloud Computing and Its Benefits for Businesses"
+  content: "Cloud computing allows companies to store and process data without investing in expensive infrastructure. Cloud solutions offer flexibility, scalability, and accessibility from anywhere in the world. Giants like AWS, Azure, and Google Cloud dominate this ever-growing market. Migrating to the cloud requires careful planning to avoid service interruptions. With the cloud, businesses can focus on innovation rather than IT maintenance."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 69
+  title: "The Growing Role of Edge Computing"
+  content: "Edge computing processes data directly at the source, reducing latency and load on central servers. This approach is especially useful for connected devices and real-time critical applications. It also enhances data security by limiting the transfer of sensitive information to the cloud. Companies adopting edge computing gain in performance and responsiveness. It is a key evolution for modern IT infrastructures."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 70
+  title: "The Rise of DevOps in Software Development"
+  content: "DevOps combines development and operations to accelerate software delivery. This methodology promotes automation of testing, continuous deployment, and closer collaboration between teams. Companies adopting DevOps see significant gains in productivity and code quality. Tools like Jenkins, Docker, and Kubernetes have become essential in this environment. DevOps changes IT culture by placing agility and efficiency at the core of software development."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 71
+  title: "Blockchain Beyond Cryptocurrencies"
+  content: "Blockchain is often associated with cryptocurrencies, but its applications go much further. It can secure transactions, manage smart contracts, and ensure product traceability. Sectors like healthcare, logistics, and finance are exploring these possibilities to improve transparency. Adoption is still hindered by technical complexity and regulatory challenges. However, blockchain could become a cornerstone of global digital infrastructure."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 72
+  title: "The Internet of Things (IoT) and the Transformation of Cities"
+  content: "IoT connects a wide range of devices to collect and analyze data in real-time. In smart cities, it helps optimize traffic, energy, and security management. Smart sensors and devices generate enormous volumes of data to be leveraged. Security and privacy remain major challenges. IoT promises to make our cities more efficient and responsive to citizens' needs."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 73
+  title: "Machine Learning for Predictive Analytics"
+  content: "Machine learning enables companies to anticipate trends and behaviors based on historical data. Predictive models assist in marketing, finance, and industrial maintenance. Data quality and algorithm selection are critical factors for obtaining reliable results. This technology changes the way strategic decisions are made. Predictive analytics is becoming a key tool for staying competitive in the digital economy."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 74
+  title: "The Role of DevSecOps in Software Security"
+  content: "DevSecOps integrates security from the early stages of software development. This approach allows vulnerabilities to be detected sooner and reduces the risk of attacks. Automated security testing and continuous monitoring are central to DevSecOps. IT teams must train developers in best cybersecurity practices. DevSecOps transforms how companies design and protect their applications."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 75
+  title: "Quantum Computing: A Step Toward the Unimaginable"
+  content: "Quantum computing uses the principles of quantum physics to solve complex problems much faster than classical computers. Potential applications include cryptography, optimization, and scientific research. While still experimental, companies like IBM and Google are making significant progress. Challenges include qubit stability and developing suitable algorithms. Quantum computing could revolutionize the IT industry in the coming decades."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 76
+  title: "The Future of Generative Artificial Intelligence"
+  content: "Generative artificial intelligence is transforming the way businesses create content and automate complex processes. Advanced models can produce text, images, and even code within seconds. This technology also raises ethical questions regarding intellectual property and misinformation. IT specialists must adapt quickly to integrate these tools responsibly. Generative AI promises to redefine the digital landscape in the coming years."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 77
+  title: "Cybersecurity Against Modern Threats"
+  content: "Cyberattacks are becoming increasingly sophisticated, targeting both large companies and individuals. Ransomware and phishing remain among the most common threats. IT experts recommend a multi-layered approach including firewalls, antivirus software, and employee training. Technologies like multi-factor authentication are becoming standard to enhance security. Cybersecurity is no longer optional but a necessity for all organizations."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 78
+  title: "Cloud Computing and Its Benefits for Businesses"
+  content: "Cloud computing allows companies to store and process data without investing in expensive infrastructure. Cloud solutions offer flexibility, scalability, and accessibility from anywhere in the world. Giants like AWS, Azure, and Google Cloud dominate this ever-growing market. Migrating to the cloud requires careful planning to avoid service interruptions. With the cloud, businesses can focus on innovation rather than IT maintenance."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 79
+  title: "The Growing Role of Edge Computing"
+  content: "Edge computing processes data directly at the source, reducing latency and load on central servers. This approach is especially useful for connected devices and real-time critical applications. It also enhances data security by limiting the transfer of sensitive information to the cloud. Companies adopting edge computing gain in performance and responsiveness. It is a key evolution for modern IT infrastructures."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 80
+  title: "The Rise of DevOps in Software Development"
+  content: "DevOps combines development and operations to accelerate software delivery. This methodology promotes automation of testing, continuous deployment, and closer collaboration between teams. Companies adopting DevOps see significant gains in productivity and code quality. Tools like Jenkins, Docker, and Kubernetes have become essential in this environment. DevOps changes IT culture by placing agility and efficiency at the core of software development."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 81
+  title: "Why Rust is gaining popularity in backend development"
+  content: "Rust is becoming increasingly popular for backend development thanks to its strong focus on safety and performance. Unlike many traditional languages, Rust prevents common programming errors such as null pointer dereferencing or data races at compile time. One of the most appreciated features is the ownership system, which ensures memory safety without relying on a garbage collector. This allows applications to run efficiently while avoiding memory leaks. Because of these advantages, Rust is now used in many modern infrastructures and high-performance services."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 82
+  title: "Building modern web applications with React"
+  content: "React has become one of the most widely used libraries for building modern web interfaces. Its component-based architecture allows developers to split the UI into small reusable pieces, making applications easier to maintain and extend. By managing the state of components efficiently, React enables dynamic interfaces that update automatically when data changes. This makes it particularly well suited for building interactive applications such as dashboards, social platforms, or content management systems. When combined with a backend API, React can power complete full-stack applications."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 83
+  title: "Introduction to Rust for web developers"
+  content: "Rust is a modern programming language focused on safety and performance. For web developers, Rust offers the ability to build fast backend services while avoiding common bugs related to memory management. With frameworks like Axum or Actix, Rust is increasingly used to build APIs and high-performance web applications."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 84
+  title: "Understanding ownership in Rust"
+  content: One of the most unique aspects of Rust is its ownership model. Ownership ensures that each value has a single owner at any time, preventing memory leaks and race conditions. Although it may seem complex at first, understanding ownership is key to writing safe and efficient Rust code."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 85
+  title: "Building user interfaces with React"
+  content: "React is a JavaScript library designed for building interactive user interfaces. Its component-based architecture allows developers to split complex interfaces into small reusable pieces. By managing component state efficiently, React applications can dynamically update the UI without reloading the entire page."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 86
+  title: "The Future of Generative Artificial Intelligence"
+  content: "Generative artificial intelligence is transforming the way businesses create content and automate complex processes. Advanced models can produce text, images, and even code within seconds. This technology also raises ethical questions regarding intellectual property and misinformation. IT specialists must adapt quickly to integrate these tools responsibly. Generative AI promises to redefine the digital landscape in the coming years."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 87
+  title: "Cybersecurity Against Modern Threats"
+  content: "Cyberattacks are becoming increasingly sophisticated, targeting both large companies and individuals. Ransomware and phishing remain among the most common threats. IT experts recommend a multi-layered approach including firewalls, antivirus software, and employee training. Technologies like multi-factor authentication are becoming standard to enhance security. Cybersecurity is no longer optional but a necessity for all organizations."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 88
+  title: "Cloud Computing and Its Benefits for Businesses"
+  content: "Cloud computing allows companies to store and process data without investing in expensive infrastructure. Cloud solutions offer flexibility, scalability, and accessibility from anywhere in the world. Giants like AWS, Azure, and Google Cloud dominate this ever-growing market. Migrating to the cloud requires careful planning to avoid service interruptions. With the cloud, businesses can focus on innovation rather than IT maintenance."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 89
+  title: "The Growing Role of Edge Computing"
+  content: "Edge computing processes data directly at the source, reducing latency and load on central servers. This approach is especially useful for connected devices and real-time critical applications. It also enhances data security by limiting the transfer of sensitive information to the cloud. Companies adopting edge computing gain in performance and responsiveness. It is a key evolution for modern IT infrastructures."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 90
+  title: "The Rise of DevOps in Software Development"
+  content: "DevOps combines development and operations to accelerate software delivery. This methodology promotes automation of testing, continuous deployment, and closer collaboration between teams. Companies adopting DevOps see significant gains in productivity and code quality. Tools like Jenkins, Docker, and Kubernetes have become essential in this environment. DevOps changes IT culture by placing agility and efficiency at the core of software development."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 91
+  title: "Blockchain Beyond Cryptocurrencies"
+  content: "Blockchain is often associated with cryptocurrencies, but its applications go much further. It can secure transactions, manage smart contracts, and ensure product traceability. Sectors like healthcare, logistics, and finance are exploring these possibilities to improve transparency. Adoption is still hindered by technical complexity and regulatory challenges. However, blockchain could become a cornerstone of global digital infrastructure."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 92
+  title: "The Internet of Things (IoT) and the Transformation of Cities"
+  content: "IoT connects a wide range of devices to collect and analyze data in real-time. In smart cities, it helps optimize traffic, energy, and security management. Smart sensors and devices generate enormous volumes of data to be leveraged. Security and privacy remain major challenges. IoT promises to make our cities more efficient and responsive to citizens' needs."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 93
+  title: "Machine Learning for Predictive Analytics"
+  content: "Machine learning enables companies to anticipate trends and behaviors based on historical data. Predictive models assist in marketing, finance, and industrial maintenance. Data quality and algorithm selection are critical factors for obtaining reliable results. This technology changes the way strategic decisions are made. Predictive analytics is becoming a key tool for staying competitive in the digital economy."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 94
+  title: "The Role of DevSecOps in Software Security"
+  content: "DevSecOps integrates security from the early stages of software development. This approach allows vulnerabilities to be detected sooner and reduces the risk of attacks. Automated security testing and continuous monitoring are central to DevSecOps. IT teams must train developers in best cybersecurity practices. DevSecOps transforms how companies design and protect their applications."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 95
+  title: "Quantum Computing: A Step Toward the Unimaginable"
+  content: "Quantum computing uses the principles of quantum physics to solve complex problems much faster than classical computers. Potential applications include cryptography, optimization, and scientific research. While still experimental, companies like IBM and Google are making significant progress. Challenges include qubit stability and developing suitable algorithms. Quantum computing could revolutionize the IT industry in the coming decades."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 96
+  title: "The Future of Generative Artificial Intelligence"
+  content: "Generative artificial intelligence is transforming the way businesses create content and automate complex processes. Advanced models can produce text, images, and even code within seconds. This technology also raises ethical questions regarding intellectual property and misinformation. IT specialists must adapt quickly to integrate these tools responsibly. Generative AI promises to redefine the digital landscape in the coming years."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 97
+  title: "Cybersecurity Against Modern Threats"
+  content: "Cyberattacks are becoming increasingly sophisticated, targeting both large companies and individuals. Ransomware and phishing remain among the most common threats. IT experts recommend a multi-layered approach including firewalls, antivirus software, and employee training. Technologies like multi-factor authentication are becoming standard to enhance security. Cybersecurity is no longer optional but a necessity for all organizations."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 98
+  title: "Cloud Computing and Its Benefits for Businesses"
+  content: "Cloud computing allows companies to store and process data without investing in expensive infrastructure. Cloud solutions offer flexibility, scalability, and accessibility from anywhere in the world. Giants like AWS, Azure, and Google Cloud dominate this ever-growing market. Migrating to the cloud requires careful planning to avoid service interruptions. With the cloud, businesses can focus on innovation rather than IT maintenance."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 99
+  title: "The Growing Role of Edge Computing"
+  content: "Edge computing processes data directly at the source, reducing latency and load on central servers. This approach is especially useful for connected devices and real-time critical applications. It also enhances data security by limiting the transfer of sensitive information to the cloud. Companies adopting edge computing gain in performance and responsiveness. It is a key evolution for modern IT infrastructures."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"
+- id: 100
+  title: "The Rise of DevOps in Software Development"
+  content: "DevOps combines development and operations to accelerate software delivery. This methodology promotes automation of testing, continuous deployment, and closer collaboration between teams. Companies adopting DevOps see significant gains in productivity and code quality. Tools like Jenkins, Docker, and Kubernetes have become essential in this environment. DevOps changes IT culture by placing agility and efficiency at the core of software development."
+  created_at: "2026-03-15T08:16:35Z"
+  updated_at: "2026-03-15T08:16:35Z"

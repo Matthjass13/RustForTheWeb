@@ -5,6 +5,12 @@ use loco_rs::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::time::Instant;
 
+
+/*
+In this file, we defined how CRUD operations
+should be handled in the backend.
+*/
+
 use crate::services::article_analysis::{analyze_articles_parallel_with_timing, ArticleAnalysis};
 use crate::services::article_analysis::analyze_articles_sequential;
 use crate::models::_entities::{
@@ -23,12 +29,13 @@ pub async fn comments(
 
 #[derive(Serialize)]
 pub struct AnalysisResponse {
-    pub parallel_results: Vec<ArticleAnalysis>,
     pub sequential_results: Vec<ArticleAnalysis>,
+    pub parallel_results: Vec<ArticleAnalysis>,
+    
+    pub sequential_duration_ms: u128,
     pub parallel_total_ms: u128,
     pub parallel_spawn_ms: u128,
     pub parallel_execution_ms: u128,
-    pub sequential_duration_ms: u128,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

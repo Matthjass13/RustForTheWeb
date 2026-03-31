@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import ArticleItem from "./ArticleItem";
 import ArticleForm from "./ArticleForm";
-import "./index.css";
+
+/*
+This component indicates how the home page should be displayed with all the articles.
+*/
 
 interface Article {
   id: number;
@@ -13,10 +16,10 @@ interface Article {
 function ArticleList() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [showForm, setShowForm] = useState(false);
-  const [parallelAnalysis, setParallelAnalysis] = useState<any[]>([]);
   const [sequentialAnalysis, setSequentialAnalysis] = useState<any[]>([]);
-  const [parallelTime, setParallelTime] = useState<number | null>(null);
+  const [parallelAnalysis, setParallelAnalysis] = useState<any[]>([]);
   const [sequentialTime, setSequentialTime] = useState<number | null>(null);
+  const [parallelTime, setParallelTime] = useState<number | null>(null);
   const [parallelSpawnTime, setParallelSpawnTime] = useState<number | null>(
     null,
   );
@@ -52,11 +55,11 @@ function ArticleList() {
   const runAnalysis = async () => {
     const response = await axios.get(`${API_URL}/analyze`);
 
-    setParallelAnalysis(response.data.parallel_results);
     setSequentialAnalysis(response.data.sequential_results);
+    setParallelAnalysis(response.data.parallel_results);
 
-    setParallelTime(response.data.parallel_total_ms);
     setSequentialTime(response.data.sequential_duration_ms);
+    setParallelTime(response.data.parallel_total_ms);
 
     setParallelSpawnTime(response.data.parallel_spawn_ms);
     setParallelExecTime(response.data.parallel_execution_ms);
@@ -66,6 +69,7 @@ function ArticleList() {
     <div>
       <h1>List of articles</h1>
 
+      {/* Form to add a new article. Hidden when validated. */}
       <button
         style={{ marginLeft: "70px" }}
         onClick={() => setShowForm(!showForm)}
@@ -74,8 +78,9 @@ function ArticleList() {
       </button>
       <br />
       {showForm && <ArticleForm onCreate={createArticle} />}
-
       <br />
+
+      {/* Analysis of articles */}
 
       <button style={{ marginLeft: "70px" }} onClick={runAnalysis}>
         Analyze Articles
@@ -98,11 +103,12 @@ function ArticleList() {
             </p>
 
             <div className="comparison-container">
-              {/* 🔴 Sequential */}
+              {/* Sequential analysis results */}
               <div className="column sequential">
                 <h3>Sequential</h3>
-                <p>{sequentialTime} ms</p>
-
+                <div>
+                  <p>{sequentialTime} ms</p>
+                </div>
                 <ul>
                   {sequentialAnalysis.map((a) => (
                     <li key={a.id}>
@@ -112,12 +118,14 @@ function ArticleList() {
                 </ul>
               </div>
 
-              {/* 🟢 Parallel */}
+              {/* Parallel analysis results */}
               <div className="column parallel">
                 <h3>Parallel</h3>
-                <p>Total: {parallelTime} ms</p>
-                <p>Spawn: {parallelSpawnTime} ms</p>
-                <p>Execution: {parallelExecTime} ms</p>
+                <div className="parallel-times">
+                  <p>Total: {parallelTime} ms</p>
+                  <p>Spawn: {parallelSpawnTime} ms</p>
+                  <p>Execution: {parallelExecTime} ms</p>
+                </div>
 
                 <ul>
                   {parallelAnalysis.map((a) => (
@@ -133,6 +141,7 @@ function ArticleList() {
 
       <br />
 
+      {/* Display all articles */}
       <ul>
         {articles.map((article) => (
           <ArticleItem

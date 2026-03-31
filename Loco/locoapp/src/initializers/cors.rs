@@ -19,8 +19,13 @@ impl Initializer for CorsInitializer {
         ctx: &AppContext,
     ) -> Result<Router> {
 
+
+        
         let cors = CorsLayer::new()
             .allow_origin(Any)
+
+            // Here, we allow all http methods so we can make the CRUD app work fully.
+            
             .allow_methods([
                 Method::GET,
                 Method::POST,
