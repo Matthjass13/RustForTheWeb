@@ -46,7 +46,9 @@ async fn rocket() -> _ {
 
     let frontend_url = std::env::var("FRONTEND_URL").unwrap_or("http://localhost:8001".to_string());
 
-    let allowed_origins = AllowedOrigins::some_exact(&[&frontend_url]);
+    let live_server_url = String::from("http://127.0.0.1:5500");
+
+    let allowed_origins = AllowedOrigins::some_exact(&[&frontend_url, &live_server_url]);
 
     let cors = CorsOptions {
         allowed_origins,

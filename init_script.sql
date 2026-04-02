@@ -13,11 +13,6 @@ INSERT INTO users (name, email) VALUES
     ('Matthias', 'matthias@example.com');
 
 -- code for testing authentication
-CREATE TABLE IF NOT EXISTS rocket_users (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL
-);
 
 CREATE TABLE IF NOT EXISTS rocket_accounts (
     id SERIAL PRIMARY KEY,
