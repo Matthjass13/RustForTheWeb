@@ -3,6 +3,9 @@
 #![allow(clippy::unused_async)]
 use loco_rs::prelude::*;
 use serde::{Deserialize, Serialize};
+use ammonia::clean;
+use ammonia::Builder;
+use std::collections::HashSet;
 
 
 /*
@@ -17,6 +20,15 @@ use crate::models::_entities::{
     comments,
 };
 use crate::models::_entities::users;
+
+
+fn clean_strict(input: &str) -> String {
+    Builder::new()
+        .tags(HashSet::new()) // ❌ aucun tag HTML autorisé
+        .clean(input)
+        .to_string()
+}
+
 
 pub async fn comments(
     Path(id): Path<i32>,
@@ -44,7 +56,19 @@ pub struct Params {
     pub content: Option<String>,
 }
 
+
+    
+
+
 impl Params {
+
+    fn sanitized(&self) -> Self {
+        Self {
+            title: self.title.as_ref().map(|t| clean_strict(t)),
+            content: self.content.as_ref().map(|c| clean_strict(c)),
+        }
+    }
+
     fn update(&self, item: &mut ActiveModel) {
         item.title = Set(self.title.clone());
         item.content = Set(self.content.clone());
@@ -63,7 +87,8 @@ pub async fn list(State(ctx): State<AppContext>) -> Result<Response> {
 pub async fn add(State(ctx): State<AppContext>, Json(params): Json<Params>) -> Result<Response> {
     //auth: auth::JWT,
     let mut item: ActiveModel = Default::default();
-    params.update(&mut item);
+    let sanitized = params.sanitized(); // XSS protection
+    sanitized.update(&mut item);
     let item = item.insert(&ctx.db).await?;
     format::json(item)
 }
@@ -76,7 +101,8 @@ pub async fn update(
 ) -> Result<Response> {
     let item = load_item(&ctx, id).await?;
     let mut item = item.into_active_model();
-    params.update(&mut item);
+    let sanitized = params.sanitized(); // XSS protection
+    sanitized.update(&mut item);
     let item = item.update(&ctx.db).await?;
     println!("Updating article with id: {}", id);
     println!("Incoming data: {:?}", params);
