@@ -80,11 +80,12 @@ function ArticleList() {
       {!isLoggedIn ? (
         <LoginForm onLogin={() => setIsLoggedIn(true)} />
       ) : (
-        <button style={{ marginLeft: "5px" }} onClick={logout}>
+        <button style={{ marginLeft: "70px" }} onClick={logout}>
           Logout
         </button>
       )}
 
+      <br />
       <br />
 
       {/* Form to add a new article. Hidden when validated. */}

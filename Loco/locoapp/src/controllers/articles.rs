@@ -61,7 +61,7 @@ pub async fn list(State(ctx): State<AppContext>) -> Result<Response> {
 }
 
 pub async fn add(State(ctx): State<AppContext>, Json(params): Json<Params>) -> Result<Response> {
-    auth: auth::JWT,
+    //auth: auth::JWT,
     let mut item: ActiveModel = Default::default();
     params.update(&mut item);
     let item = item.insert(&ctx.db).await?;
