@@ -15,14 +15,14 @@ function LoginForm({ onLogin }: Props) {
 
   const handleLogin = async () => {
     try {
-      const res = await axios.post(`${API_URL}/auth/login`, {
-        email,
-        password,
-      });
-      localStorage.setItem("token", res.data.token);
-      onLogin(); // Prévenir le parent que le login a réussi
+      await axios.post(
+        `${API_URL}/auth/login`,
+        { email, password },
+        { withCredentials: true },
+      );
+      onLogin();
     } catch {
-      setError("Email ou mot de passe incorrect");
+      setError("Incorrect mail or password");
     }
   };
 
@@ -38,12 +38,12 @@ function LoginForm({ onLogin }: Props) {
       />
       <input
         type="password"
-        placeholder="Mot de passe"
+        placeholder="Password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
       <button style={{ marginLeft: "20px" }} onClick={handleLogin}>
-        Se connecter
+        Login
       </button>
     </div>
   );

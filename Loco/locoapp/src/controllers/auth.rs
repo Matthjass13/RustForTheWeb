@@ -11,6 +11,10 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::sync::OnceLock;
 
+use axum::response::IntoResponse;
+use axum_extra::extract::CookieJar;
+use axum_extra::extract::cookie::{Cookie, SameSite};
+
 pub static EMAIL_DOMAIN_RE: OnceLock<Regex> = OnceLock::new();
 
 fn get_allow_email_domain_re() -> &'static Regex {
@@ -132,31 +136,39 @@ async fn reset(State(ctx): State<AppContext>, Json(params): Json<ResetParams>) -
     format::json(())
 }
 
-/// Creates a user login and returns a token
+
 #[debug_handler]
-async fn login(State(ctx): State<AppContext>, Json(params): Json<LoginParams>) -> Result<Response> {
+async fn login(
+    jar: CookieJar,
+    State(ctx): State<AppContext>,
+    Json(params): Json<LoginParams>,
+) -> Result<impl IntoResponse> {
     let Ok(user) = users::Model::find_by_email(&ctx.db, &params.email).await else {
-        tracing::debug!(
-            email = params.email,
-            "login attempt with non-existent email"
-        );
         return unauthorized("Invalid credentials!");
     };
 
     let valid = user.verify_password(&params.password);
-
     if !valid {
         return unauthorized("unauthorized!");
     }
 
     let jwt_secret = ctx.config.get_jwt_config()?;
-
     let token = user
         .generate_jwt(&jwt_secret.secret, jwt_secret.expiration)
         .or_else(|_| unauthorized("unauthorized!"))?;
 
-    format::json(LoginResponse::new(&user, &token))
+    let cookie = Cookie::build(("token", token))
+        .http_only(true)
+        .same_site(SameSite::Strict)
+        .path("/")
+        // .secure(true) // décommenter en production
+        .build();
+
+    let updated_jar = jar.add(cookie);
+
+    Ok((updated_jar, format::json(LoginResponse::new(&user, &String::new()))))
 }
+
 
 #[debug_handler]
 async fn current(auth: auth::JWT, State(ctx): State<AppContext>) -> Result<Response> {
@@ -258,6 +270,21 @@ async fn resend_verification_email(
     format::json(())
 }
 
+/*
+async fn logout(jar: CookieJar) -> Result<Response> {
+    let removal = Cookie::build(("token", ""))
+        .path("/")
+        .build();
+    let _jar = jar.remove(removal);
+    format::json(())
+}
+*/
+async fn logout(jar: CookieJar) -> Result<impl IntoResponse> {
+    let jar = jar.remove(Cookie::build(("token", "")).path("/").build());
+    Ok((jar, axum::Json(serde_json::json!({}))))
+}
+
+
 pub fn routes() -> Routes {
     Routes::new()
         .prefix("/api/auth")
@@ -270,4 +297,5 @@ pub fn routes() -> Routes {
         .add("/magic-link", post(magic_link))
         .add("/magic-link/{token}", get(magic_link_verify))
         .add("/resend-verification-mail", post(resend_verification_email))
+        .add("/logout", post(logout))
 }

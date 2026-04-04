@@ -13,7 +13,7 @@ use loco_rs::{
 use migration::Migrator;
 use std::path::Path;
 use tower_http::cors::{CorsLayer, Any};
-use axum::http::Method;
+use axum::http::{Method, HeaderValue};
 
 use crate::initializers::cors::CorsInitializer;
 
@@ -47,20 +47,6 @@ impl Hooks for App {
 
         let mut result = create_app::<Self, Migrator>(mode, environment, config).await?;
 
-        let cors = CorsLayer::new()
-            .allow_origin(Any)
-            .allow_methods([
-                Method::GET,
-                Method::POST,
-                Method::PUT,
-                Method::DELETE,
-                Method::OPTIONS,
-            ])
-            .allow_headers(Any);
-
-        if let Some(router) = result.router.take() {
-            result.router = Some(router.layer(cors));
-        }
 
         Ok(result)
     }

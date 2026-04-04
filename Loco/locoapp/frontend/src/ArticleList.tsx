@@ -15,9 +15,14 @@ interface Article {
 }
 
 function ArticleList() {
-  const [isLoggedIn, setIsLoggedIn] = useState(
-    !!localStorage.getItem("token"), // ← true si token déjà présent
-  );
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  useEffect(() => {
+    axios
+      .get(`${API_URL}/auth/current`)
+      .then(() => setIsLoggedIn(true))
+      .catch(() => setIsLoggedIn(false));
+  }, []);
+
   const [articles, setArticles] = useState<Article[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [sequentialAnalysis, setSequentialAnalysis] = useState<any[]>([]);
@@ -69,8 +74,8 @@ function ArticleList() {
     setParallelExecTime(response.data.parallel_execution_ms);
   };
 
-  const logout = () => {
-    localStorage.removeItem("token");
+  const logout = async () => {
+    await axios.post("http://localhost:5150/api/auth/logout");
     setIsLoggedIn(false);
   };
 
@@ -162,14 +167,17 @@ function ArticleList() {
 
       {/* Display all articles */}
       <ul>
-        {articles.map((article) => (
-          <ArticleItem
-            key={article.id}
-            article={article}
-            onDelete={deleteArticle}
-            onUpdate={updateArticle}
-          />
-        ))}
+        {articles
+          .slice()
+          .reverse()
+          .map((article) => (
+            <ArticleItem
+              key={article.id}
+              article={article}
+              onDelete={deleteArticle}
+              onUpdate={updateArticle}
+            />
+          ))}
       </ul>
     </div>
   );

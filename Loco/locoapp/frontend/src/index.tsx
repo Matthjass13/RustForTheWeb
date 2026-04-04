@@ -9,6 +9,8 @@ This page is the home page of the loco crud app.
 It will display all articles in the database with the <ArticleList> component.
 */
 
+axios.defaults.withCredentials = true;
+
 const root = document.getElementById("root");
 
 if (!root) {

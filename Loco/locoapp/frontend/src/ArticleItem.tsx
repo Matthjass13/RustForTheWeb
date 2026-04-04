@@ -55,7 +55,7 @@ function ArticleItem({ article, onDelete, onUpdate }: Props) {
       <h3>
         {article.title}
         <button style={{ marginLeft: "5px" }} onClick={() => setEditing(true)}>
-          Update
+          Edit
         </button>
 
         <button className="delete-button" onClick={() => onDelete(article.id)}>

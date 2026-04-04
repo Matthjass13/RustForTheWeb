@@ -3,10 +3,10 @@
 #![allow(clippy::unused_async)]
 use loco_rs::prelude::*;
 use serde::{Deserialize, Serialize};
-use ammonia::clean;
-use ammonia::Builder;
+use ammonia::{Builder, clean};
 use std::collections::HashSet;
-
+use axum_extra::extract::CookieJar;
+use axum_extra::extract::cookie::Cookie;
 
 /*
 In this file, we defined how CRUD operations
@@ -24,7 +24,7 @@ use crate::models::_entities::users;
 
 fn clean_strict(input: &str) -> String {
     Builder::new()
-        .tags(HashSet::new()) // ❌ aucun tag HTML autorisé
+        .tags(HashSet::new()) // No html tag authorized
         .clean(input)
         .to_string()
 }
@@ -84,38 +84,58 @@ pub async fn list(State(ctx): State<AppContext>) -> Result<Response> {
     format::json(Entity::find().all(&ctx.db).await?)
 }
 
-pub async fn add(State(ctx): State<AppContext>, Json(params): Json<Params>) -> Result<Response> {
-    //auth: auth::JWT,
+fn validate_jwt(jar: &CookieJar, ctx: &AppContext) -> Result<()> {
+    let token = jar
+        .get("token")
+        .ok_or_else(|| Error::Unauthorized("missing token".into()))?;
+
+    let jwt_secret = ctx.config.get_jwt_config()?;
+
+    loco_rs::auth::jwt::JWT::new(&jwt_secret.secret)
+        .validate(token.value())
+        .or_else(|_| unauthorized("invalid token"))?;
+
+    Ok(())
+}
+
+pub async fn add(
+    jar: CookieJar,
+    State(ctx): State<AppContext>,
+    Json(params): Json<Params>,
+) -> Result<Response> {
+    validate_jwt(&jar, &ctx)?;
+
     let mut item: ActiveModel = Default::default();
-    let sanitized = params.sanitized(); // XSS protection
+    let sanitized = params.sanitized();
     sanitized.update(&mut item);
     let item = item.insert(&ctx.db).await?;
     format::json(item)
 }
 
 pub async fn update(
-    auth: auth::JWT,
+    jar: CookieJar,
     Path(id): Path<i32>,
     State(ctx): State<AppContext>,
     Json(params): Json<Params>,
 ) -> Result<Response> {
+    validate_jwt(&jar, &ctx)?;
+
     let item = load_item(&ctx, id).await?;
     let mut item = item.into_active_model();
-    let sanitized = params.sanitized(); // XSS protection
+    let sanitized = params.sanitized();
     sanitized.update(&mut item);
     let item = item.update(&ctx.db).await?;
-    println!("Updating article with id: {}", id);
-    println!("Incoming data: {:?}", params);
     format::json(item)
 }
 
 pub async fn remove(
-    auth: auth::JWT,
-    
-    Path(id): Path<i32>, State(ctx): State<AppContext>) -> Result<Response> {
-    load_item(&ctx, id).await?.delete(&ctx.db).await?;
+    jar: CookieJar,
+    Path(id): Path<i32>,
+    State(ctx): State<AppContext>,
+) -> Result<Response> {
+    validate_jwt(&jar, &ctx)?;
 
-    // Returns an empty http response
+    load_item(&ctx, id).await?.delete(&ctx.db).await?;
     format::empty()
 }
 

@@ -35,7 +35,7 @@ chrono = { version = "0.4" }
 validator = { version = "0.20" }
 uuid = { version = "1.6", features = ["v4"] }
 include_dir = { version = "0.7" }
-axum-extra = { version = "0.10", features = ["form"] }
+axum-extra = { version = "0.10", features = ["form", "cookie"] }
 tower-http = "0.6.8"
 ammonia = "4"
 
@@ -53,3 +53,4 @@ loco-rs = { workspace = true, features = ["testing"] }
 serial_test = { version = "3.1.1" }
 rstest = { version = "0.25" }
 insta = { version = "1.34", features = ["redactions", "yaml", "filters"] }
+
