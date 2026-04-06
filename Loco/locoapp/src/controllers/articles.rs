@@ -120,11 +120,11 @@ pub async fn update(
 ) -> Result<Response> {
     validate_jwt(&jar, &ctx)?;
 
-    let item = load_item(&ctx, id).await?;
-    let mut item = item.into_active_model();
+    let item = load_item(&ctx, id).await?;  // Type = Model
+    let mut item = item.into_active_model(); // Type = ActiveModel
     let sanitized = params.sanitized();
     sanitized.update(&mut item);
-    let item = item.update(&ctx.db).await?;
+    let item = item.update(&ctx.db).await?; // Type = Model
     format::json(item)
 }
 
