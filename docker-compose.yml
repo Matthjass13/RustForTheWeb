@@ -83,5 +83,36 @@ services:
       postgres:
         condition: service_healthy
 
+  loco_be:
+    build:
+      context: ./Loco/locoapp
+      dockerfile: Dockerfile
+    container_name: loco_be
+    restart: unless-stopped
+    ports:
+      - "5150:5150"
+    environment:
+      LOCO_ENV: development
+    volumes:
+      # Persiste le fichier SQLite entre les redémarrages du container
+      # Le chemin /app/data/locoapp.db doit correspondre à ce qui est
+      # configuré dans config/production.yaml (voir note ci-dessous)
+      - loco_sqlite_data:/app/data
+    # Pas de depends_on postgres : SQLite est embarqué, pas de serveur externe
+
+  loco_fe:
+    build:
+      context: ./Loco/locoapp/frontend
+      dockerfile: Dockerfile
+    container_name: loco_fe
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: http://localhost:5150
+    depends_on:
+      - loco_be
+
 volumes:
   postgres_data:
+  loco_sqlite_data:
