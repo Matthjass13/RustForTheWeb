@@ -2,8 +2,9 @@ mod models;
 
 use axum::{
     extract::{Path, State},
-    http::StatusCode,
-    response::IntoResponse,
+    http::{header, Request, StatusCode}, // Added header and Request
+    middleware::{self, Next},           // Added for custom auth
+    response::{IntoResponse, Response},  // Added Response
     routing::{delete, get, post, put},
     Json, Router,
 };
@@ -15,7 +16,10 @@ use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
 use std::env;
 use std::sync::Arc;
-use std::time::{Instant, SystemTime, UNIX_EPOCH};
+use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH}; // Added Duration
+use tower::ServiceBuilder;                                 // Added for middleware management
+use tower_http::{trace::TraceLayer, timeout::TimeoutLayer}; // Added standard tower layers
+use tower_http::cors::{Any, CorsLayer};
 
 #[derive(Deserialize)]
 struct CreateUserRequest {
@@ -38,9 +42,13 @@ type AppState = Arc<SharedState>;
 
 #[tokio::main]
 async fn main() {
+    // 1. Setup Environment and Connections
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     let redis_url = env::var("REDIS_URL").unwrap_or_else(|_| "redis://redis:6379".to_string());
     let django_url = env::var("DJANGO_URL").unwrap_or_else(|_| "http://python_be:8000".to_string());
+
+    // Initialize Tracing (crucial for TraceLayer to work!)
+    tracing_subscriber::fmt::init();
 
     let pool = PgPoolOptions::new()
         .max_connections(5)
@@ -56,8 +64,21 @@ async fn main() {
         django_url,
     });
 
-    let app = Router::new()
-        .route("/", get(index))
+// 1. Define the middleware stack for PROTECTED routes
+
+    let cors = CorsLayer::new()
+        .allow_origin(Any) 
+        .allow_methods(Any)
+        .allow_headers(Any);
+
+    let api_middleware = ServiceBuilder::new()
+        .layer(TraceLayer::new_for_http())
+        .layer(cors)
+        .layer(TimeoutLayer::new(Duration::from_secs(30)))
+        .layer(middleware::from_fn(auth_middleware));
+
+    // 2. Create the API router and apply the auth layer to it
+    let api_routes = Router::new()
         .route("/users", post(handle_create_user))
         .route("/users/:id", get(handle_get_user))
         .route("/users/:id", put(handle_update_email))
@@ -65,11 +86,43 @@ async fn main() {
         .route("/rust/sort", get(handle_rust_sort))
         .route("/django/sort", get(handle_django_proxy))
         .route("/race-status", get(handle_race_status))
-        .with_state(state);
+        .layer(api_middleware); // Only these routes require the token
+
+    // 3. Create the main app and merge the public + private routes
+    let app = Router::new()
+        .route("/", get(index)) // This is public!
+        .merge(api_routes)      // Add the protected routes
+        .with_state(state);     // State is shared across everything
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
-    println!("Listening on http://0.0.0.0:3000");
+    println!("Listening on http://0.0.0.0:3000 (Index is public, API is private)");
     axum::serve(listener, app).await.unwrap();
+}
+
+// --- Custom Authentication Middleware ---
+
+async fn auth_middleware(
+    req: Request<axum::body::Body>,
+    next: Next,
+) -> Result<Response, StatusCode> {
+    // Extract Authorization header
+    let auth_header = req.headers()
+        .get(header::AUTHORIZATION)
+        .and_then(|h| h.to_str().ok());
+
+    // Basic Token Check (In a PoC, this might be a static env var)
+    // For production, you'd verify a JWT or session here.
+    const AUTH_TOKEN: &str = "Bearer secret-poc-token";
+
+    if let Some(token) = auth_header {
+        if token == AUTH_TOKEN {
+            // Token is valid, proceed to the next layer/handler
+            return Ok(next.run(req).await);
+        }
+    }
+
+    // Token is missing or invalid
+    Err(StatusCode::UNAUTHORIZED)
 }
 
 async fn index() -> axum::response::Html<&'static str> {

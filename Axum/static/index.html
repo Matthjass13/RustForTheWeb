@@ -514,8 +514,11 @@
 
 <script>
     const BASE = '';
+    // This must match the AUTH_TOKEN in your main.rs exactly
+    const AUTH_TOKEN = 'Bearer secret-poc-token'; 
+
     let raceInterval = null;
-    let raceStartLocalMs = null; // client-side start timestamp for live elapsed
+    let raceStartLocalMs = null; 
     let raceRunning = false;
 
     // ── Formatting helpers ──
@@ -555,7 +558,6 @@
             document.getElementById(`${e}-throughput`).textContent = '—';
             document.getElementById(`${e}-swaps`).textContent = '—';
             document.getElementById(`${e}-comparisons`).textContent = '—';
-            // remove highlight classes
             ['elapsed','throughput','swaps','comparisons'].forEach(s => {
                 document.getElementById(`${e}-${s}`).className = 'stat-value';
             });
@@ -574,7 +576,6 @@
         fill.style.width = pct + '%';
         document.getElementById(`${engine}-pct`).textContent = pct + '%';
 
-        // Shimmer while running
         if (pct > 0 && pct < 100) {
             fill.classList.add('active');
         } else {
@@ -600,14 +601,12 @@
         document.getElementById('rust-fill').classList.remove('active');
         document.getElementById('django-fill').classList.remove('active');
 
-        // Highlight winner stats
         const winEl = winner === 'rust' ? 'rust' : 'django';
         ['elapsed','throughput','swaps','comparisons'].forEach(s => {
             const el = document.getElementById(`${winEl}-${s}`);
             el.classList.add(`highlight-${winEl}`);
         });
 
-        // Build detail line
         const rustMs = rustData.elapsed_ms || 0;
         const djangoMs = djangoData.elapsed_ms || 0;
         let detail = '';
@@ -639,25 +638,25 @@
         setLog('Starting race…', true);
         raceStartLocalMs = Date.now();
 
-        // Fire both race requests — don't await, let them run in parallel
-        fetch(`${BASE}/rust/sort`).catch(() => {});
-        fetch(`${BASE}/django/sort`).catch(() => {});
+        // Fire both race requests with AUTH_TOKEN
+        const fetchOptions = { headers: { 'Authorization': AUTH_TOKEN } };
+        fetch(`${BASE}/rust/sort`, fetchOptions).catch(() => {});
+        fetch(`${BASE}/django/sort`, fetchOptions).catch(() => {});
 
-        // Small delay to let backends initialise Redis keys before first poll
         await new Promise(r => setTimeout(r, 200));
         setLog('Race running — polling telemetry…', true);
 
         raceInterval = setInterval(async () => {
             try {
-                const res = await fetch(`${BASE}/race-status`);
+                const res = await fetch(`${BASE}/race-status`, {
+                    headers: { 'Authorization': AUTH_TOKEN }
+                });
                 const d = await res.json();
-                // d = { rust: {...}, django: {...}, winner, start_ms }
 
                 updateEngine('rust', d.rust);
                 updateEngine('django', d.django);
 
                 if (d.winner !== 'none') {
-                    // Do one final update to make sure final numbers are shown
                     updateEngine('rust', d.rust);
                     updateEngine('django', d.django);
                     declareWinner(d.winner, d.rust, d.django);
@@ -683,7 +682,10 @@
         try {
             const r = await fetch(`${BASE}/users`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': AUTH_TOKEN 
+                },
                 body: JSON.stringify({ name, email })
             });
             setRes('create-res', `${r.status} ${r.statusText}`, r.ok);
@@ -694,7 +696,9 @@
         const id = document.getElementById('get-id').value.trim();
         if (!id) return setRes('get-res', 'id required', false);
         try {
-            const r = await fetch(`${BASE}/users/${id}`);
+            const r = await fetch(`${BASE}/users/${id}`, {
+                headers: { 'Authorization': AUTH_TOKEN }
+            });
             const text = await r.text();
             let display = text;
             try { display = JSON.stringify(JSON.parse(text), null, 2); } catch {}
@@ -709,7 +713,10 @@
         try {
             const r = await fetch(`${BASE}/users/${id}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': AUTH_TOKEN 
+                },
                 body: JSON.stringify({ email })
             });
             setRes('update-res', `${r.status} ${r.statusText}`, r.ok);
@@ -720,7 +727,10 @@
         const id = document.getElementById('delete-id').value.trim();
         if (!id) return setRes('delete-res', 'id required', false);
         try {
-            const r = await fetch(`${BASE}/users/${id}`, { method: 'DELETE' });
+            const r = await fetch(`${BASE}/users/${id}`, { 
+                method: 'DELETE',
+                headers: { 'Authorization': AUTH_TOKEN }
+            });
             setRes('delete-res', `${r.status} ${r.statusText}`, r.ok);
         } catch (e) { setRes('delete-res', e.message, false); }
     }
