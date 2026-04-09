@@ -13,12 +13,13 @@ use loco_rs::{
 use migration::Migrator;
 use std::path::Path;
 use tower_http::cors::{CorsLayer, Any};
-use axum::http::Method;
+use axum::http::{Method, HeaderValue};
 
 use crate::initializers::cors::CorsInitializer;
 
 #[allow(unused_imports)]
 use crate::{controllers, models::_entities::users, tasks, workers::downloader::DownloadWorker};
+use crate::models::_entities::articles;
 
 pub struct App;
 #[async_trait]
@@ -46,20 +47,6 @@ impl Hooks for App {
 
         let mut result = create_app::<Self, Migrator>(mode, environment, config).await?;
 
-        let cors = CorsLayer::new()
-            .allow_origin(Any)
-            .allow_methods([
-                Method::GET,
-                Method::POST,
-                Method::PUT,
-                Method::DELETE,
-                Method::OPTIONS,
-            ])
-            .allow_headers(Any);
-
-        if let Some(router) = result.router.take() {
-            result.router = Some(router.layer(cors));
-        }
 
         Ok(result)
     }
@@ -91,9 +78,24 @@ impl Hooks for App {
         truncate_table(&ctx.db, users::Entity).await?;
         Ok(())
     }
+
+    /*
+    This function could have be useful if we needed to seed users.
+    We didn't need users in this poc so we commented this function.
+    */
+    /*
     async fn seed(ctx: &AppContext, base: &Path) -> Result<()> {
         db::seed::<users::ActiveModel>(&ctx.db, &base.join("users.yaml").display().to_string())
             .await?;
+        Ok(())
+    }*/
+
+    /* 
+    Here, we configure the seed function to retrieve data
+    from the articles.yaml file and use it to seed the database with 100 articles.
+     */
+    async fn seed(ctx: &AppContext, base: &Path) -> Result<()> {
+        db::seed::<articles::ActiveModel>(&ctx.db, &base.join("articles.yaml").display().to_string()).await?;
         Ok(())
     }
 }

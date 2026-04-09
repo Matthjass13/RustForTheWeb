@@ -11,3 +11,8 @@ Rust is a general-purpose programming language known for its focus on performanc
 # How to run our examples
 
 See documentation in the wiki section
+
+# Project management
+
+We managed the project with the Scrum methodology, using Taiga.
+Here is the link of the project : https://tree.taiga.io/project/matthjass-rust-for-the-web/timeline

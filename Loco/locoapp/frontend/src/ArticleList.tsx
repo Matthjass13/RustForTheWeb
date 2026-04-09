@@ -2,7 +2,11 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import ArticleItem from "./ArticleItem";
 import ArticleForm from "./ArticleForm";
-import "./index.css";
+import LoginForm from "./LoginForm";
+
+/*
+This component indicates how the home page should be displayed with all the articles.
+*/
 
 interface Article {
   id: number;
@@ -11,15 +15,24 @@ interface Article {
 }
 
 function ArticleList() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  useEffect(() => {
+    axios
+      .get(`${API_URL}/auth/current`)
+      .then(() => setIsLoggedIn(true))
+      .catch(() => setIsLoggedIn(false));
+  }, []);
+
   const [articles, setArticles] = useState<Article[]>([]);
   const [showForm, setShowForm] = useState(false);
-  //const [analysis, setAnalysis] = useState<any[]>([]);
-
-  const [parallelAnalysis, setParallelAnalysis] = useState<any[]>([]);
   const [sequentialAnalysis, setSequentialAnalysis] = useState<any[]>([]);
-  const [parallelTime, setParallelTime] = useState<number | null>(null);
+  const [parallelAnalysis, setParallelAnalysis] = useState<any[]>([]);
   const [sequentialTime, setSequentialTime] = useState<number | null>(null);
-  //const [duration, setDuration] = useState<number | null>(null);
+  const [parallelTime, setParallelTime] = useState<number | null>(null);
+  const [parallelSpawnTime, setParallelSpawnTime] = useState<number | null>(
+    null,
+  );
+  const [parallelExecTime, setParallelExecTime] = useState<number | null>(null);
 
   const API_URL = "http://localhost:5150/api/articles";
 
@@ -50,79 +63,121 @@ function ArticleList() {
 
   const runAnalysis = async () => {
     const response = await axios.get(`${API_URL}/analyze`);
-    setParallelAnalysis(response.data.parallel_results);
+
     setSequentialAnalysis(response.data.sequential_results);
-    setParallelTime(response.data.parallel_duration_ms);
+    setParallelAnalysis(response.data.parallel_results);
+
     setSequentialTime(response.data.sequential_duration_ms);
+    setParallelTime(response.data.parallel_total_ms);
+
+    setParallelSpawnTime(response.data.parallel_spawn_ms);
+    setParallelExecTime(response.data.parallel_execution_ms);
+  };
+
+  const logout = async () => {
+    await axios.post("http://localhost:5150/api/auth/logout");
+    setIsLoggedIn(false);
   };
 
   return (
     <div>
       <h1>List of articles</h1>
+      {!isLoggedIn ? (
+        <LoginForm onLogin={() => setIsLoggedIn(true)} />
+      ) : (
+        <button style={{ marginLeft: "70px" }} onClick={logout}>
+          Logout
+        </button>
+      )}
 
+      <br />
+      <br />
+
+      {/* Form to add a new article. Hidden when validated. */}
       <button
-        style={{ marginLeft: "40px" }}
+        style={{ marginLeft: "70px" }}
         onClick={() => setShowForm(!showForm)}
       >
         Add an article
       </button>
+      <br />
+      {showForm && <ArticleForm onCreate={createArticle} />}
+      <br />
 
-      <button style={{ marginLeft: "40px" }} onClick={runAnalysis}>
+      {/* Analysis of articles */}
+
+      <button style={{ marginLeft: "70px" }} onClick={runAnalysis}>
         Analyze Articles
       </button>
 
-      {parallelTime !== null && sequentialTime !== null && (
-        <div>
-          <h2>Performance Comparison</h2>
-          <p>
-            Parallel computation is {(sequentialTime / parallelTime).toFixed(2)}
-            {""}x faster than sequential
-          </p>
+      {parallelTime !== null &&
+        parallelExecTime !== null &&
+        sequentialTime !== null && (
+          <div>
+            <h2 style={{ marginLeft: "70px" }}>Performance Comparison</h2>
+            <p style={{ marginLeft: "70px" }}>
+              Parallel computation is{" "}
+              {(sequentialTime / parallelTime).toFixed(2)}
+              {""}x faster than sequential
+            </p>
+            <p style={{ marginLeft: "70px" }}>
+              Parallel computation is{" "}
+              {(sequentialTime / parallelExecTime).toFixed(2)}
+              {""}x faster than sequential, threads spawn time excluded
+            </p>
 
-          <div className="comparison-container">
-            {/* 🔴 Sequential */}
-            <div className="column sequential">
-              <h3>Sequential</h3>
-              <p>{sequentialTime} ms</p>
+            <div className="comparison-container">
+              {/* Sequential analysis results */}
+              <div className="column sequential">
+                <h3>Sequential</h3>
+                <div>
+                  <p>{sequentialTime} ms</p>
+                </div>
+                <ul>
+                  {sequentialAnalysis.map((a) => (
+                    <li key={a.id}>
+                      Article {a.id} → {a.word_count} words
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-              <ul>
-                {sequentialAnalysis.map((a) => (
-                  <li key={a.id}>
-                    Article {a.id} → {a.word_count} words
-                  </li>
-                ))}
-              </ul>
-            </div>
+              {/* Parallel analysis results */}
+              <div className="column parallel">
+                <h3>Parallel</h3>
+                <div className="parallel-times">
+                  <p>Total: {parallelTime} ms</p>
+                  <p>Spawn: {parallelSpawnTime} ms</p>
+                  <p>Execution: {parallelExecTime} ms</p>
+                </div>
 
-            {/* 🟢 Parallel */}
-            <div className="column parallel">
-              <h3>Parallel</h3>
-              <p>{parallelTime} ms</p>
-
-              <ul>
-                {parallelAnalysis.map((a) => (
-                  <li key={a.id}>
-                    Article {a.id} → {a.word_count} words
-                  </li>
-                ))}
-              </ul>
+                <ul>
+                  {parallelAnalysis.map((a) => (
+                    <li key={a.id}>
+                      Article {a.id} → {a.word_count} words
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
       <br />
-      {showForm && <ArticleForm onCreate={createArticle} />}
 
+      {/* Display all articles */}
       <ul>
-        {articles.map((article) => (
-          <ArticleItem
-            key={article.id}
-            article={article}
-            onDelete={deleteArticle}
-            onUpdate={updateArticle}
-          />
-        ))}
+        {articles
+          .slice()
+          .reverse()
+          .map((article) => (
+            <ArticleItem
+              key={article.id}
+              article={article}
+              onDelete={deleteArticle}
+              onUpdate={updateArticle}
+            />
+          ))}
       </ul>
     </div>
   );

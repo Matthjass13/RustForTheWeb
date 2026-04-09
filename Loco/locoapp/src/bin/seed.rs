@@ -1,12 +1,11 @@
-/*use sea_orm::entity::*;
-use sea_orm::query::*;
-use sea_orm::DatabaseConnection;
-use sea_orm::DbErr;
-use crate::entity::article;*/
+/* 
+Not sure if this file is actually doing something in this project.
+The app.rs file is seemingly used to seed the db instead.
+In doubt, I let this file live for now.
+*/
 
-use locoapp::models::_entities::articles; // ton modèle généré par cargo loco
+use locoapp::models::_entities::articles;
 use sea_orm::{DatabaseConnection, ActiveModelTrait, Set, DbErr};
-
 
 pub async fn seed_articles(db: &DatabaseConnection) -> Result<(), DbErr> {
      let articles = vec![
@@ -20,11 +19,10 @@ pub async fn seed_articles(db: &DatabaseConnection) -> Result<(), DbErr> {
             title: "Second article".to_owned(),
             content: "Contenu du second article".to_owned(),
         },
-        // ajoute autant d’articles que tu veux
     ];
 
     for a in articles {
-        let mut active: Article::ActiveModel = a.into(); // conversion en ActiveModel
+        let mut active: Article::ActiveModel = a.into();
         active.insert(db).await?;
     }
 

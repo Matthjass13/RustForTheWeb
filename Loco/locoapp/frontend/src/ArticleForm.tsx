@@ -1,5 +1,9 @@
 import { useState } from "react";
-import "./index.css";
+
+/*
+This component represents the form the user can use to add a new article.
+It can be toggled on or off with the add an article button.
+*/
 
 interface Props {
   onCreate: (title: string, content: string) => void;
@@ -35,7 +39,7 @@ function ArticleForm({ onCreate }: Props) {
         />
       </div>
 
-      <div style={{ marginTop: "10px" }}>
+      <div style={{ marginTop: "10px", marginLeft: "30px" }}>
         <button onClick={handleSubmit}>Add</button>
       </div>
     </div>

@@ -3,6 +3,7 @@ use loco_rs::app::{AppContext, Initializer};
 use loco_rs::Result;
 use tower_http::cors::{Any, CorsLayer};
 use axum::{http::Method, Router};
+use axum::http::HeaderValue;
 
 pub struct CorsInitializer;
 
@@ -16,11 +17,14 @@ impl Initializer for CorsInitializer {
     async fn after_routes(
         &self, 
         router:Router,
-        ctx: &AppContext,
+        _ctx: &AppContext,
     ) -> Result<Router> {
 
+
+        
         let cors = CorsLayer::new()
-            .allow_origin(Any)
+            .allow_origin("http://localhost:3000".parse::<HeaderValue>().unwrap())
+            .allow_credentials(true)
             .allow_methods([
                 Method::GET,
                 Method::POST,
@@ -29,9 +33,11 @@ impl Initializer for CorsInitializer {
                 Method::PATCH,
                 Method::OPTIONS,
             ])
-            .allow_headers(Any);
-
-        //ctx.router.lock().unwrap().layer(cors);
+            .allow_headers([
+                axum::http::header::CONTENT_TYPE,
+                axum::http::header::AUTHORIZATION,
+                axum::http::header::ACCEPT,
+            ]);
 
         Ok(router.layer(cors))
     }

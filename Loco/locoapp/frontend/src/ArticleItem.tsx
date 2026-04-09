@@ -1,5 +1,9 @@
 import { useState } from "react";
-import "./index.css";
+
+/*
+This component indicates how a given article is displayed.
+It can either be displayed normally, or in editing mode when the user is updating its content.
+*/
 
 interface Article {
   id: number;
@@ -34,7 +38,6 @@ function ArticleItem({ article, onDelete, onUpdate }: Props) {
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />
-
         <br />
 
         <button style={{ marginTop: "10px" }} onClick={save}>
@@ -52,13 +55,10 @@ function ArticleItem({ article, onDelete, onUpdate }: Props) {
       <h3>
         {article.title}
         <button style={{ marginLeft: "5px" }} onClick={() => setEditing(true)}>
-          Update
+          Edit
         </button>
 
-        <button
-          style={{ marginLeft: "5px" }}
-          onClick={() => onDelete(article.id)}
-        >
+        <button className="delete-button" onClick={() => onDelete(article.id)}>
           X
         </button>
       </h3>

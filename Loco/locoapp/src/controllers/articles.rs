@@ -3,14 +3,32 @@
 #![allow(clippy::unused_async)]
 use loco_rs::prelude::*;
 use serde::{Deserialize, Serialize};
-use std::time::Instant;
+use ammonia::{Builder, clean};
+use std::collections::HashSet;
+use axum_extra::extract::CookieJar;
+use axum_extra::extract::cookie::Cookie;
 
-use crate::services::article_analysis::{analyze_articles_parallel, ArticleAnalysis};
+/*
+In this file, we defined how CRUD operations
+should be handled in the backend.
+*/
+
+use crate::services::article_analysis::{analyze_articles_parallel_with_timing, ArticleAnalysis};
 use crate::services::article_analysis::analyze_articles_sequential;
 use crate::models::_entities::{
     articles::{ActiveModel, Entity, Model},
     comments,
 };
+use crate::models::_entities::users;
+
+
+fn clean_strict(input: &str) -> String {
+    Builder::new()
+        .tags(HashSet::new()) // No html tag authorized
+        .clean(input)
+        .to_string()
+}
+
 
 pub async fn comments(
     Path(id): Path<i32>,
@@ -23,10 +41,13 @@ pub async fn comments(
 
 #[derive(Serialize)]
 pub struct AnalysisResponse {
-    pub parallel_results: Vec<ArticleAnalysis>,
     pub sequential_results: Vec<ArticleAnalysis>,
-    pub parallel_duration_ms: u128,
+    pub parallel_results: Vec<ArticleAnalysis>,
+    
     pub sequential_duration_ms: u128,
+    pub parallel_total_ms: u128,
+    pub parallel_spawn_ms: u128,
+    pub parallel_execution_ms: u128,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -35,7 +56,19 @@ pub struct Params {
     pub content: Option<String>,
 }
 
+
+    
+
+
 impl Params {
+
+    fn sanitized(&self) -> Self {
+        Self {
+            title: self.title.as_ref().map(|t| clean_strict(t)),
+            content: self.content.as_ref().map(|c| clean_strict(c)),
+        }
+    }
+
     fn update(&self, item: &mut ActiveModel) {
         item.title = Set(self.title.clone());
         item.content = Set(self.content.clone());
@@ -51,28 +84,57 @@ pub async fn list(State(ctx): State<AppContext>) -> Result<Response> {
     format::json(Entity::find().all(&ctx.db).await?)
 }
 
-pub async fn add(State(ctx): State<AppContext>, Json(params): Json<Params>) -> Result<Response> {
+fn validate_jwt(jar: &CookieJar, ctx: &AppContext) -> Result<()> {
+    let token = jar
+        .get("token")
+        .ok_or_else(|| Error::Unauthorized("missing token".into()))?;
+
+    let jwt_secret = ctx.config.get_jwt_config()?;
+
+    loco_rs::auth::jwt::JWT::new(&jwt_secret.secret)
+        .validate(token.value())
+        .or_else(|_| unauthorized("invalid token"))?;
+
+    Ok(())
+}
+
+pub async fn add(
+    jar: CookieJar,
+    State(ctx): State<AppContext>,
+    Json(params): Json<Params>,
+) -> Result<Response> {
+    validate_jwt(&jar, &ctx)?;
+
     let mut item: ActiveModel = Default::default();
-    params.update(&mut item);
+    let sanitized = params.sanitized();
+    sanitized.update(&mut item);
     let item = item.insert(&ctx.db).await?;
     format::json(item)
 }
 
 pub async fn update(
+    jar: CookieJar,
     Path(id): Path<i32>,
     State(ctx): State<AppContext>,
     Json(params): Json<Params>,
 ) -> Result<Response> {
-    let item = load_item(&ctx, id).await?;
-    let mut item = item.into_active_model();
-    params.update(&mut item);
-    let item = item.update(&ctx.db).await?;
-    println!("Updating article with id: {}", id);
-    println!("Incoming data: {:?}", params);
+    validate_jwt(&jar, &ctx)?;
+
+    let item = load_item(&ctx, id).await?;  // Type = Model
+    let mut item = item.into_active_model(); // Type = ActiveModel
+    let sanitized = params.sanitized();
+    sanitized.update(&mut item);
+    let item = item.update(&ctx.db).await?; // Type = Model
     format::json(item)
 }
 
-pub async fn remove(Path(id): Path<i32>, State(ctx): State<AppContext>) -> Result<Response> {
+pub async fn remove(
+    jar: CookieJar,
+    Path(id): Path<i32>,
+    State(ctx): State<AppContext>,
+) -> Result<Response> {
+    validate_jwt(&jar, &ctx)?;
+
     load_item(&ctx, id).await?.delete(&ctx.db).await?;
     format::empty()
 }
@@ -110,15 +172,16 @@ pub async fn analyze(State(ctx): State<AppContext>) -> Result<Response> {
     let sequential_duration = start_seq.elapsed().as_millis();
 
     // Parallel
-    let start_par = Instant::now();
-    let parallel_results = analyze_articles_parallel(data);
-    let parallel_duration = start_par.elapsed().as_millis();
+    let parallel = analyze_articles_parallel_with_timing(data);
+
+    let parallel_total = parallel.spawn_time_ms + parallel.execution_time_ms;
 
     format::json(AnalysisResponse {
-        parallel_results,
+        parallel_results: parallel.results,
         sequential_results,
-        parallel_duration_ms: parallel_duration,
+        parallel_total_ms: parallel_total,
+        parallel_spawn_ms: parallel.spawn_time_ms,
+        parallel_execution_ms: parallel.execution_time_ms,
         sequential_duration_ms: sequential_duration,
     })
-
 }
