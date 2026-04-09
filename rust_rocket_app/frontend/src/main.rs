@@ -1,6 +1,4 @@
-use std::thread::spawn;
-
-use gloo::net::http::{Request, RequestBuilder};
+use gloo::net::http::Request;
 use serde::{Deserialize, Serialize};
 use shared::User as SharedUser;
 use wasm_bindgen_futures::spawn_local;
@@ -10,11 +8,104 @@ fn main() {
     yew::Renderer::<App>::new().render();
 }
 
+#[derive(Deserialize)]
+struct AuthResponse {
+    token: String,
+}
+
 #[function_component(App)]
 fn app() -> Html {
     let user_state = use_state(|| ("".to_string(), "".to_string(), None as Option<i32>));
     let message = use_state(|| "".to_string());
     let users = use_state(Vec::new);
+    let token = use_state(|| None as Option<String>);
+    let login_state = use_state(|| ("".to_string(), "".to_string()));
+
+    let register_state = use_state(|| ("".to_string(), "".to_string(), "".to_string())); // email, password, role
+    let register_message = use_state(|| "".to_string());
+
+    let register = {
+        let register_state = register_state.clone();
+        let register_message = register_message.clone();
+        Callback::from(move |_| {
+            let (email, password, role) = (*register_state).clone();
+            let register_state = register_state.clone();
+            let register_message = register_message.clone();
+
+            spawn_local(async move {
+                let body = serde_json::json!({
+                    "email": email,
+                    "password": password,
+                    "role": role
+                });
+
+                match Request::post("/api/register")
+                    .header("Content-Type", "application/json")
+                    .body(body.to_string())
+                    .unwrap()
+                    .send()
+                    .await
+                {
+                    Ok(resp) if resp.ok() => {
+                        register_message.set("Account created successfully".into());
+                        register_state.set(("".to_string(), "".to_string(), "".to_string()));
+                    }
+                    _ => {
+                        register_message.set("Failed to create account".into());
+                        register_state.set(("".to_string(), "".to_string(), "".to_string()));
+                    }
+                }
+            });
+        })
+    };
+
+    let login = {
+        let token = token.clone();
+        let message = message.clone();
+        let login_state = login_state.clone();
+
+        Callback::from(move |_| {
+            let token = token.clone();
+            let message = message.clone();
+            let login_state = login_state.clone();
+            let (email, password) = (*login_state).clone();
+
+            spawn_local(async move {
+                let body = serde_json::json!({
+                    "email": email,
+                    "password": password
+                });
+
+                match Request::post("/api/login")
+                    .header("Content-Type", "application/json")
+                    .body(body.to_string())
+                    .unwrap()
+                    .send()
+                    .await
+                {
+                    Ok(resp) if resp.ok() => {
+                        let auth: AuthResponse = resp.json().await.unwrap();
+                        token.set(Some(auth.token));
+                        message.set("Logged in successfully".into());
+                    }
+                    _ => {
+                        message.set("Login failed".into());
+                    }
+                }
+
+                login_state.set(("".to_string(), "".to_string()));
+            });
+        })
+    };
+
+    let logout = {
+        let token = token.clone();
+        let message = message.clone();
+        Callback::from(move |_| {
+            token.set(None);
+            message.set("Logged out".into());
+        })
+    };
 
     let get_users = {
         let users = users.clone();
@@ -28,7 +119,6 @@ fn app() -> Html {
                         let fetched_users: Vec<SharedUser> = resp.json().await.unwrap_or_default();
                         users.set(fetched_users);
                     }
-
                     _ => message.set("Failed to fetch users".into()),
                 }
             });
@@ -48,7 +138,7 @@ fn app() -> Html {
             spawn_local(async move {
                 let user_data = serde_json::json!({"name": name, "email": email});
 
-                let response = Request::post("api/add_user")
+                let response = Request::post("/api/add_user")
                     .header("Content-Type", "application/json")
                     .body(user_data.to_string())
                     .unwrap()
@@ -60,7 +150,6 @@ fn app() -> Html {
                         message.set("User created successfully".into());
                         get_users.emit(());
                     }
-
                     _ => message.set("Failed to create user".into()),
                 }
 
@@ -73,17 +162,28 @@ fn app() -> Html {
         let user_state = user_state.clone();
         let message = message.clone();
         let get_users = get_users.clone();
+        let token = token.clone();
 
         Callback::from(move |_| {
             let (name, email, editing_user_id) = (*user_state).clone();
             let user_state = user_state.clone();
             let message = message.clone();
             let get_users = get_users.clone();
+            let token = (*token).clone();
 
             if let Some(id) = editing_user_id {
                 spawn_local(async move {
+                    let auth_header = match &token {
+                        Some(t) => format!("Bearer {}", t),
+                        None => {
+                            message.set("Unauthorized to update user".into());
+                            return;
+                        }
+                    };
+
                     let response = Request::put(&format!("/api/update_user/{}", id))
                         .header("Content-Type", "application/json")
+                        .header("Authorization", &auth_header)
                         .body(serde_json::to_string(&(name.as_str(), email.as_str())).unwrap())
                         .unwrap()
                         .send()
@@ -94,7 +194,6 @@ fn app() -> Html {
                             message.set("User updated successfully".into());
                             get_users.emit(());
                         }
-
                         _ => message.set("Failed to update user".into()),
                     }
 
@@ -107,13 +206,24 @@ fn app() -> Html {
     let delete_user = {
         let message = message.clone();
         let get_users = get_users.clone();
+        let token = token.clone();
 
         Callback::from(move |id: i32| {
             let message = message.clone();
             let get_users = get_users.clone();
+            let token = (*token).clone();
 
             spawn_local(async move {
+                let auth_header = match &token {
+                    Some(t) => format!("Bearer {}", t),
+                    None => {
+                        message.set("Unauthorized to delete".into());
+                        return;
+                    }
+                };
+
                 let response = Request::delete(&format!("/api/delete_user/{}", id))
+                    .header("Authorization", &auth_header)
                     .send()
                     .await;
 
@@ -122,7 +232,6 @@ fn app() -> Html {
                         message.set("User deleted successfully".into());
                         get_users.emit(());
                     }
-
                     _ => message.set("Failed to delete user".into()),
                 }
             });
@@ -141,8 +250,113 @@ fn app() -> Html {
     };
 
     html! {
-        <div class="container mx-auto p-4">
-            <h1 class="text-4xl font-bold text-blue-500 mb-4">{ "User Management" }</h1>
+            <div class="container mx-auto p-4">
+                <h1 class="text-4xl font-bold text-blue-500 mb-4">{ "User Management" }</h1>
+                <div class="mb-6 p-4 border rounded bg-gray-100">
+        <h2 class="text-xl font-bold mb-2">{ "Register" }</h2>
+        <input
+            placeholder="Email"
+            value={register_state.0.clone()}
+            oninput={Callback::from({
+                let register_state = register_state.clone();
+                move |e: InputEvent| {
+                    let input = e.target_dyn_into::<web_sys::HtmlInputElement>().unwrap();
+                    register_state.set((input.value(), register_state.1.clone(), register_state.2.clone()));
+                }
+            })}
+            class="border rounded px-4 py-2 mr-2"
+        />
+        <input
+            type="password"
+            placeholder="Password"
+            value={register_state.1.clone()}
+            oninput={Callback::from({
+                let register_state = register_state.clone();
+                move |e: InputEvent| {
+                    let input = e.target_dyn_into::<web_sys::HtmlInputElement>().unwrap();
+                    register_state.set((register_state.0.clone(), input.value(), register_state.2.clone()));
+                }
+            })}
+            class="border rounded px-4 py-2 mr-2"
+        />
+        <input
+            placeholder="Role (admin/user)"
+            value={register_state.2.clone()}
+            oninput={Callback::from({
+                let register_state = register_state.clone();
+                move |e: InputEvent| {
+                    let input = e.target_dyn_into::<web_sys::HtmlInputElement>().unwrap();
+                    register_state.set((register_state.0.clone(), register_state.1.clone(), input.value()));
+                }
+            })}
+            class="border rounded px-4 py-2 mr-2"
+        />
+        <button
+            onclick={register}
+            class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded"
+        >
+            { "Register" }
+        </button>
+        if !register_message.is_empty() {
+            <p class="text-green-500 mt-2">{ &*register_message }</p>
+        }
+    </div>
+
+                // Section login
+                {
+                    if token.is_none() {
+                        html! {
+                            <div class="mb-6 p-4 border rounded bg-gray-50">
+                                <h2 class="text-xl font-bold mb-2">{ "Login" }</h2>
+                                <input
+                                    placeholder="Email"
+                                    value={login_state.0.clone()}
+                                    oninput={Callback::from({
+                                        let login_state = login_state.clone();
+                                        move |e: InputEvent| {
+                                            let input = e.target_dyn_into::<web_sys::HtmlInputElement>().unwrap();
+                                            login_state.set((input.value(), login_state.1.clone()));
+                                        }
+                                    })}
+                                    class="border rounded px-4 py-2 mr-2"
+                                />
+                                <input
+                                    type="password"
+                                    placeholder="Password"
+                                    value={login_state.1.clone()}
+                                    oninput={Callback::from({
+                                        let login_state = login_state.clone();
+                                        move |e: InputEvent| {
+                                            let input = e.target_dyn_into::<web_sys::HtmlInputElement>().unwrap();
+                                            login_state.set((login_state.0.clone(), input.value()));
+                                        }
+                                    })}
+                                    class="border rounded px-4 py-2 mr-2"
+                                />
+                                <button
+                                    onclick={login}
+                                    class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                                >
+                                    { "Login" }
+                                </button>
+                            </div>
+                        }
+                    } else {
+                        html! {
+                            <div class="mb-6 p-4 border rounded bg-green-50">
+                                <p class="text-green-700 font-semibold">{ "✅ Logged in" }</p>
+                                <button
+                                    onclick={logout}
+                                    class="mt-2 bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded"
+                                >
+                                    { "Logout" }
+                                </button>
+                            </div>
+                        }
+                    }
+                }
+
+                // Section gestion users
                 <div class="mb-4">
                     <input
                         placeholder="Name"
@@ -168,15 +382,13 @@ fn app() -> Html {
                         })}
                         class="border rounded px-4 py-2 mr-2"
                     />
-
                     <button
                         onclick={if user_state.2.is_some() { update_user.clone() } else { create_user.clone() }}
                         class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                     >
                         { if user_state.2.is_some() { "Update User" } else { "Create User" } }
-
                     </button>
-                        if !message.is_empty() {
+                    if !message.is_empty() {
                         <p class="text-green-500 mt-2">{ &*message }</p>
                     }
                 </div>
@@ -211,10 +423,7 @@ fn app() -> Html {
                             </li>
                         }
                     })}
-
                 </ul>
-
-
-        </div>
-    }
+            </div>
+        }
 }

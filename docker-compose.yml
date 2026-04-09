@@ -79,6 +79,8 @@ services:
     environment:
       DATABASE_URL: postgres://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-secret}@postgres:5432/${POSTGRES_DB:-mydb}
       ROCKET_ADDRESS: "0.0.0.0"
+      JWT_SECRET: "87e6d51c9b951767ab3dc614e44046a0dc66677bcf3a00a053e4d1c1d3656b2c"
+      FRONTEND_URL: "http://localhost:8001"
     depends_on:
       postgres:
         condition: service_healthy

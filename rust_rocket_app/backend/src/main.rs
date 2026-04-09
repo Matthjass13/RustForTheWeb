@@ -1,3 +1,5 @@
+mod auth;
+mod guards;
 mod model;
 use rocket::fs::FileServer;
 use rocket::serde::json::Json;
@@ -6,7 +8,11 @@ use rocket::{tokio::task::id, *};
 use rocket_cors::{AllowedOrigins, CorsOptions};
 use sqlx::postgres::PgPoolOptions;
 use std::env;
+mod fairings;
+use auth::{login, register};
+use fairings::SecurityHeaders;
 
+use crate::guards::AdminUser;
 use crate::model::{NewUser, User};
 
 struct DbConn {
@@ -38,12 +44,21 @@ async fn rocket() -> _ {
     .await
     .expect("Impossible to create database");
 
-    let cors = CorsOptions::default()
-        .allowed_origins(AllowedOrigins::all())
-        .to_cors()
-        .expect("Error while building CORS");
+    let frontend_url = std::env::var("FRONTEND_URL").unwrap_or("http://localhost:8001".to_string());
+
+    let live_server_url = String::from("http://127.0.0.1:5500");
+
+    let allowed_origins = AllowedOrigins::some_exact(&[&frontend_url, &live_server_url]);
+
+    let cors = CorsOptions {
+        allowed_origins,
+        ..Default::default()
+    }
+    .to_cors()
+    .expect("Error while building CORS");
 
     rocket::build()
+        .attach(SecurityHeaders)
         .manage(DbConn { pool })
         .mount(
             "/api",
@@ -53,7 +68,9 @@ async fn rocket() -> _ {
                 get_one_user,
                 add_user,
                 update_user,
-                delete_user
+                delete_user,
+                register,
+                login
             ],
         )
         .mount("/", FileServer::from("static/"))
@@ -67,7 +84,7 @@ async fn index(db: &State<DbConn>) -> String {
         .await
         .unwrap();
 
-    format!("Nombre de tables: {}", row.0)
+    format!("Number of tables: {}", row.0)
 }
 
 #[get("/get_users")]
@@ -114,6 +131,7 @@ async fn update_user(
     db: &State<DbConn>,
     id: i32,
     user: Json<NewUser>,
+    _admin: AdminUser,
 ) -> Result<Json<User>, String> {
     let updated_user = sqlx::query_as(
         "
@@ -134,7 +152,7 @@ async fn update_user(
 }
 
 #[delete("/delete_user/<id>")]
-async fn delete_user(db: &State<DbConn>, id: i32) -> Result<Status, String> {
+async fn delete_user(db: &State<DbConn>, id: i32, _admin: AdminUser) -> Result<Status, String> {
     let Dbstatus = sqlx::query("DELETE FROM users WHERE id = $1")
         .bind(id)
         .execute(&db.pool)
