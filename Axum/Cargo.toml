@@ -12,7 +12,7 @@ serde_json = "1"
 dotenv = "0.15"
 redis = "1.1.0"
 reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json"] }
-tower-http = { version = "0.5", features = ["trace", "timeout", "cors"] }
+tower-http = { version = "0.5", features = ["trace", "timeout", "cors", "fs"] }
 tracing-subscriber = "0.3"
 tower = { version = "0.5.1", features = ["full"] }
 

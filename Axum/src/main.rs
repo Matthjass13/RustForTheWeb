@@ -20,6 +20,8 @@ use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH}; // Added Duration
 use tower::ServiceBuilder;                                 // Added for middleware management
 use tower_http::{trace::TraceLayer, timeout::TimeoutLayer}; // Added standard tower layers
 use tower_http::cors::{Any, CorsLayer};
+use tower_http::services::ServeDir;
+use axum::http::header::HeaderValue;
 
 #[derive(Deserialize)]
 struct CreateUserRequest {
@@ -77,7 +79,7 @@ async fn main() {
         .layer(TimeoutLayer::new(Duration::from_secs(30)))
         .layer(middleware::from_fn(auth_middleware));
 
-    // 2. Create the API router and apply the auth layer to it
+    // 2. Create the API router
     let api_routes = Router::new()
         .route("/users", post(handle_create_user))
         .route("/users/:id", get(handle_get_user))
@@ -86,13 +88,28 @@ async fn main() {
         .route("/rust/sort", get(handle_rust_sort))
         .route("/django/sort", get(handle_django_proxy))
         .route("/race-status", get(handle_race_status))
-        .layer(api_middleware); // Only these routes require the token
+        // Apply middleware specifically to this group
+        .layer(api_middleware); 
 
-    // 3. Create the main app and merge the public + private routes
+    // 3. Create the main app
     let app = Router::new()
-        .route("/", get(index)) // This is public!
-        .merge(api_routes)      // Add the protected routes
-        .with_state(state);     // State is shared across everything
+        .route("/", get(index))
+        // Serve any file in /static/ under the /static path
+        .nest_service("/static", ServeDir::new("static")) 
+        .nest("/", api_routes)
+        .layer(axum::middleware::map_response(|mut response: Response| async move {
+            let csp_value = "default-src 'self'; \
+                            script-src 'self'; \
+                            style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; \
+                            font-src https://fonts.gstatic.com;";
+            
+            response.headers_mut().insert(
+                header::CONTENT_SECURITY_POLICY,
+                HeaderValue::from_static(csp_value),
+            );
+            response
+        }))
+        .with_state(state);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
     println!("Listening on http://0.0.0.0:3000 (Index is public, API is private)");
@@ -105,7 +122,9 @@ async fn auth_middleware(
     req: Request<axum::body::Body>,
     next: Next,
 ) -> Result<Response, StatusCode> {
+    println!("Bouncer checking request for: {}", req.uri());
     // Extract Authorization header
+
     let auth_header = req.headers()
         .get(header::AUTHORIZATION)
         .and_then(|h| h.to_str().ok());

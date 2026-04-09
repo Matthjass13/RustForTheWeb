@@ -58,7 +58,6 @@
             color: var(--muted);
         }
 
-        /* ── Layout ── */
         .grid {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
@@ -163,7 +162,6 @@
 
         .full-width { grid-column: 1 / -1; }
 
-        /* ── Race Telemetry Panel ── */
         .telemetry-panel {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -201,10 +199,7 @@
         .engine-block.rust  .engine-name { color: var(--rust-color); }
         .engine-block.django .engine-name { color: var(--django-color); }
 
-        /* Progress bar */
-        .progress-wrap {
-            margin-bottom: 16px;
-        }
+        .progress-wrap { margin-bottom: 16px; }
 
         .progress-header {
             display: flex;
@@ -244,23 +239,6 @@
         .engine-block.rust  .progress-fill { background: var(--rust-color); }
         .engine-block.django .progress-fill { background: var(--django-color); }
 
-        /* Shimmer on active */
-        .progress-fill.active::after {
-            content: '';
-            position: absolute;
-            top: 0; right: 0;
-            width: 40px; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            animation: shimmer 1s infinite;
-        }
-
-        @keyframes shimmer {
-            0%   { transform: translateX(0); opacity: 0; }
-            50%  { opacity: 1; }
-            100% { transform: translateX(60px); opacity: 0; }
-        }
-
-        /* Stat grid */
         .stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -290,10 +268,6 @@
             transition: color 0.2s;
         }
 
-        .stat-value.highlight-rust   { color: var(--rust-color); }
-        .stat-value.highlight-django { color: var(--django-color); }
-
-        /* Winner banner */
         #winner-banner {
             display: none;
             margin-top: 20px;
@@ -309,28 +283,17 @@
         }
 
         #winner-banner.show { display: flex; }
-        #winner-banner .trophy { font-size: 1.2rem; }
 
         #winner-banner.rust-wins   { border-color: var(--rust-color);   color: var(--rust-color); }
         #winner-banner.django-wins { border-color: var(--django-color); color: var(--django-color); }
 
-        #winner-banner .win-detail {
-            margin-left: auto;
-            font-size: 0.7rem;
-            color: var(--muted-2);
-        }
-
-        /* Race control row */
         .race-controls {
             display: flex;
             gap: 12px;
             align-items: stretch;
         }
 
-        .race-controls button {
-            flex: 0 0 160px;
-            margin: 0;
-        }
+        .race-controls button { flex: 0 0 160px; margin: 0; }
 
         .race-log {
             flex: 1;
@@ -370,90 +333,52 @@
 
 <div class="grid">
 
-    <!-- ── Race Telemetry (full width) ── -->
     <div class="card full-width">
         <div class="card-title">Live Telemetry</div>
 
         <div class="telemetry-panel">
-            <!-- Rust -->
             <div class="engine-block rust">
                 <div class="engine-name">⬡ Rust / Axum</div>
-
                 <div class="progress-wrap">
                     <div class="progress-header">
                         <span class="progress-label">PROGRESS</span>
                         <span class="progress-pct" id="rust-pct">0%</span>
                     </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="rust-fill"></div>
-                    </div>
+                    <div class="progress-bar"><div class="progress-fill" id="rust-fill"></div></div>
                 </div>
-
                 <div class="stats-grid">
-                    <div class="stat">
-                        <div class="stat-label">Elapsed</div>
-                        <div class="stat-value" id="rust-elapsed">—</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-label">Swaps/sec</div>
-                        <div class="stat-value" id="rust-throughput">—</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-label">Total Swaps</div>
-                        <div class="stat-value" id="rust-swaps">—</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-label">Comparisons</div>
-                        <div class="stat-value" id="rust-comparisons">—</div>
-                    </div>
+                    <div class="stat"><div class="stat-label">Elapsed</div><div class="stat-value" id="rust-elapsed">—</div></div>
+                    <div class="stat"><div class="stat-label">Swaps/sec</div><div class="stat-value" id="rust-throughput">—</div></div>
+                    <div class="stat"><div class="stat-label">Total Swaps</div><div class="stat-value" id="rust-swaps">—</div></div>
+                    <div class="stat"><div class="stat-label">Comparisons</div><div class="stat-value" id="rust-comparisons">—</div></div>
                 </div>
             </div>
 
-            <!-- Django -->
             <div class="engine-block django">
                 <div class="engine-name">⬡ Python / Django</div>
-
                 <div class="progress-wrap">
                     <div class="progress-header">
                         <span class="progress-label">PROGRESS</span>
                         <span class="progress-pct" id="django-pct">0%</span>
                     </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="django-fill"></div>
-                    </div>
+                    <div class="progress-bar"><div class="progress-fill" id="django-fill"></div></div>
                 </div>
-
                 <div class="stats-grid">
-                    <div class="stat">
-                        <div class="stat-label">Elapsed</div>
-                        <div class="stat-value" id="django-elapsed">—</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-label">Swaps/sec</div>
-                        <div class="stat-value" id="django-throughput">—</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-label">Total Swaps</div>
-                        <div class="stat-value" id="django-swaps">—</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-label">Comparisons</div>
-                        <div class="stat-value" id="django-comparisons">—</div>
-                    </div>
+                    <div class="stat"><div class="stat-label">Elapsed</div><div class="stat-value" id="django-elapsed">—</div></div>
+                    <div class="stat"><div class="stat-label">Swaps/sec</div><div class="stat-value" id="django-throughput">—</div></div>
+                    <div class="stat"><div class="stat-label">Total Swaps</div><div class="stat-value" id="django-swaps">—</div></div>
+                    <div class="stat"><div class="stat-label">Comparisons</div><div class="stat-value" id="django-comparisons">—</div></div>
                 </div>
             </div>
         </div>
 
-        <!-- Winner banner -->
         <div id="winner-banner">
             <span class="trophy">🏁</span>
             <span id="winner-text">—</span>
-            <span class="win-detail" id="winner-detail"></span>
         </div>
 
-        <!-- Controls -->
         <div class="race-controls" style="margin-top: 20px;">
-            <button id="race-btn" onclick="startRace()">START RACE</button>
+            <button id="race-btn">START RACE</button>
             <div class="race-log">
                 <span class="dot" id="status-dot"></span>
                 <span id="race-log-text">Ready. Press START RACE to begin.</span>
@@ -461,280 +386,38 @@
         </div>
     </div>
 
-    <!-- ── User CRUD ── -->
     <div class="card">
         <div class="card-title">Create User</div>
-        <div class="field">
-            <label>NAME</label>
-            <input id="create-name" type="text" placeholder="Jane Doe">
-        </div>
-        <div class="field">
-            <label>EMAIL</label>
-            <input id="create-email" type="email" placeholder="jane@example.com">
-        </div>
-        <button onclick="createUser()">POST /users</button>
+        <div class="field"><label>NAME</label><input id="create-name" type="text" placeholder="Jane Doe"></div>
+        <div class="field"><label>EMAIL</label><input id="create-email" type="email" placeholder="jane@example.com"></div>
+        <button id="btn-create">POST /users</button>
         <div class="response" id="create-res">—</div>
     </div>
 
     <div class="card">
         <div class="card-title">Get User</div>
-        <div class="field">
-            <label>USER ID</label>
-            <input id="get-id" type="number" placeholder="1">
-        </div>
-        <button onclick="getUser()">GET /users/:id</button>
+        <div class="field"><label>USER ID</label><input id="get-id" type="number" placeholder="1"></div>
+        <button id="btn-get">GET /users/:id</button>
         <div class="response" id="get-res">—</div>
     </div>
 
     <div class="card">
         <div class="card-title">Update Email</div>
-        <div class="field">
-            <label>USER ID</label>
-            <input id="update-id" type="number" placeholder="1">
-        </div>
-        <div class="field">
-            <label>NEW EMAIL</label>
-            <input id="update-email" type="email" placeholder="new@example.com">
-        </div>
-        <button onclick="updateEmail()">PUT /users/:id</button>
+        <div class="field"><label>USER ID</label><input id="update-id" type="number" placeholder="1"></div>
+        <div class="field"><label>NEW EMAIL</label><input id="update-email" type="email" placeholder="new@example.com"></div>
+        <button id="btn-update">PUT /users/:id</button>
         <div class="response" id="update-res">—</div>
     </div>
 
     <div class="card">
         <div class="card-title">Delete User</div>
-        <div class="field">
-            <label>USER ID</label>
-            <input id="delete-id" type="number" placeholder="1">
-        </div>
-        <button class="danger" onclick="deleteUser()">DELETE /users/:id</button>
+        <div class="field"><label>USER ID</label><input id="delete-id" type="number" placeholder="1"></div>
+        <button id="btn-delete" class="danger">DELETE /users/:id</button>
         <div class="response" id="delete-res">—</div>
     </div>
 
 </div>
 
-<script>
-    const BASE = '';
-    // This must match the AUTH_TOKEN in your main.rs exactly
-    const AUTH_TOKEN = 'Bearer secret-poc-token'; 
-
-    let raceInterval = null;
-    let raceStartLocalMs = null; 
-    let raceRunning = false;
-
-    // ── Formatting helpers ──
-
-    function fmtMs(ms) {
-        if (ms == null || ms === 0) return '—';
-        if (ms < 1000) return ms + ' ms';
-        return (ms / 1000).toFixed(2) + ' s';
-    }
-
-    function fmtBig(n) {
-        if (n == null || n === 0) return '—';
-        if (n >= 1_000_000) return (n / 1_000_000).toFixed(2) + 'M';
-        if (n >= 1_000)     return (n / 1_000).toFixed(1) + 'k';
-        return String(n);
-    }
-
-    function fmtThroughput(swaps, elapsed_ms) {
-        if (!swaps || !elapsed_ms || elapsed_ms === 0) return '—';
-        const perSec = (swaps / elapsed_ms) * 1000;
-        return fmtBig(Math.round(perSec)) + '/s';
-    }
-
-    // ── UI update ──
-
-    function setLog(msg, active = false) {
-        document.getElementById('race-log-text').textContent = msg;
-        document.getElementById('status-dot').className = 'dot' + (active ? ' active' : '');
-    }
-
-    function resetUI() {
-        ['rust', 'django'].forEach(e => {
-            document.getElementById(`${e}-fill`).style.width = '0%';
-            document.getElementById(`${e}-fill`).classList.remove('active');
-            document.getElementById(`${e}-pct`).textContent = '0%';
-            document.getElementById(`${e}-elapsed`).textContent = '—';
-            document.getElementById(`${e}-throughput`).textContent = '—';
-            document.getElementById(`${e}-swaps`).textContent = '—';
-            document.getElementById(`${e}-comparisons`).textContent = '—';
-            ['elapsed','throughput','swaps','comparisons'].forEach(s => {
-                document.getElementById(`${e}-${s}`).className = 'stat-value';
-            });
-        });
-
-        const banner = document.getElementById('winner-banner');
-        banner.className = '';
-        banner.style.display = 'none';
-        document.getElementById('winner-text').textContent = '—';
-        document.getElementById('winner-detail').textContent = '';
-    }
-
-    function updateEngine(engine, data) {
-        const pct = data.progress || 0;
-        const fill = document.getElementById(`${engine}-fill`);
-        fill.style.width = pct + '%';
-        document.getElementById(`${engine}-pct`).textContent = pct + '%';
-
-        if (pct > 0 && pct < 100) {
-            fill.classList.add('active');
-        } else {
-            fill.classList.remove('active');
-        }
-
-        const elapsed = data.elapsed_ms || 0;
-        const swaps = data.swaps || 0;
-        const comparisons = data.comparisons || 0;
-
-        document.getElementById(`${engine}-elapsed`).textContent = fmtMs(elapsed);
-        document.getElementById(`${engine}-throughput`).textContent = fmtThroughput(swaps, elapsed);
-        document.getElementById(`${engine}-swaps`).textContent = fmtBig(swaps);
-        document.getElementById(`${engine}-comparisons`).textContent = fmtBig(comparisons);
-    }
-
-    function declareWinner(winner, rustData, djangoData) {
-        clearInterval(raceInterval);
-        raceInterval = null;
-        raceRunning = false;
-
-        document.getElementById('race-btn').disabled = false;
-        document.getElementById('rust-fill').classList.remove('active');
-        document.getElementById('django-fill').classList.remove('active');
-
-        const winEl = winner === 'rust' ? 'rust' : 'django';
-        ['elapsed','throughput','swaps','comparisons'].forEach(s => {
-            const el = document.getElementById(`${winEl}-${s}`);
-            el.classList.add(`highlight-${winEl}`);
-        });
-
-        const rustMs = rustData.elapsed_ms || 0;
-        const djangoMs = djangoData.elapsed_ms || 0;
-        let detail = '';
-        if (rustMs && djangoMs) {
-            const faster = Math.max(rustMs, djangoMs);
-            const slower = Math.min(rustMs, djangoMs);
-            const times = (faster / slower).toFixed(1);
-            detail = `${times}× faster · rust ${fmtMs(rustMs)} · django ${fmtMs(djangoMs)}`;
-        }
-
-        const banner = document.getElementById('winner-banner');
-        const cls = winner === 'rust' ? 'rust-wins' : 'django-wins';
-        banner.className = `show ${cls}`;
-        document.getElementById('winner-text').textContent =
-            winner === 'rust' ? 'RUST WINS' : 'DJANGO WINS';
-        document.getElementById('winner-detail').textContent = detail;
-
-        setLog(`Race complete. Winner: ${winner.toUpperCase()}`, false);
-    }
-
-    // ── Race logic ──
-
-    async function startRace() {
-        if (raceRunning) return;
-        raceRunning = true;
-
-        document.getElementById('race-btn').disabled = true;
-        resetUI();
-        setLog('Starting race…', true);
-        raceStartLocalMs = Date.now();
-
-        // Fire both race requests with AUTH_TOKEN
-        const fetchOptions = { headers: { 'Authorization': AUTH_TOKEN } };
-        fetch(`${BASE}/rust/sort`, fetchOptions).catch(() => {});
-        fetch(`${BASE}/django/sort`, fetchOptions).catch(() => {});
-
-        await new Promise(r => setTimeout(r, 200));
-        setLog('Race running — polling telemetry…', true);
-
-        raceInterval = setInterval(async () => {
-            try {
-                const res = await fetch(`${BASE}/race-status`, {
-                    headers: { 'Authorization': AUTH_TOKEN }
-                });
-                const d = await res.json();
-
-                updateEngine('rust', d.rust);
-                updateEngine('django', d.django);
-
-                if (d.winner !== 'none') {
-                    updateEngine('rust', d.rust);
-                    updateEngine('django', d.django);
-                    declareWinner(d.winner, d.rust, d.django);
-                }
-            } catch (e) {
-                setLog('Polling… (Redis ping)', true);
-            }
-        }, 400);
-    }
-
-    // ── User CRUD ──
-
-    function setRes(id, text, ok) {
-        const el = document.getElementById(id);
-        el.textContent = text;
-        el.className = 'response ' + (ok ? 'ok' : 'err');
-    }
-
-    async function createUser() {
-        const name  = document.getElementById('create-name').value.trim();
-        const email = document.getElementById('create-email').value.trim();
-        if (!name || !email) return setRes('create-res', 'name and email required', false);
-        try {
-            const r = await fetch(`${BASE}/users`, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Authorization': AUTH_TOKEN 
-                },
-                body: JSON.stringify({ name, email })
-            });
-            setRes('create-res', `${r.status} ${r.statusText}`, r.ok);
-        } catch (e) { setRes('create-res', e.message, false); }
-    }
-
-    async function getUser() {
-        const id = document.getElementById('get-id').value.trim();
-        if (!id) return setRes('get-res', 'id required', false);
-        try {
-            const r = await fetch(`${BASE}/users/${id}`, {
-                headers: { 'Authorization': AUTH_TOKEN }
-            });
-            const text = await r.text();
-            let display = text;
-            try { display = JSON.stringify(JSON.parse(text), null, 2); } catch {}
-            setRes('get-res', `${r.status} ${r.statusText}\n${display}`, r.ok);
-        } catch (e) { setRes('get-res', e.message, false); }
-    }
-
-    async function updateEmail() {
-        const id    = document.getElementById('update-id').value.trim();
-        const email = document.getElementById('update-email').value.trim();
-        if (!id || !email) return setRes('update-res', 'id and email required', false);
-        try {
-            const r = await fetch(`${BASE}/users/${id}`, {
-                method: 'PUT',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Authorization': AUTH_TOKEN 
-                },
-                body: JSON.stringify({ email })
-            });
-            setRes('update-res', `${r.status} ${r.statusText}`, r.ok);
-        } catch (e) { setRes('update-res', e.message, false); }
-    }
-
-    async function deleteUser() {
-        const id = document.getElementById('delete-id').value.trim();
-        if (!id) return setRes('delete-res', 'id required', false);
-        try {
-            const r = await fetch(`${BASE}/users/${id}`, { 
-                method: 'DELETE',
-                headers: { 'Authorization': AUTH_TOKEN }
-            });
-            setRes('delete-res', `${r.status} ${r.statusText}`, r.ok);
-        } catch (e) { setRes('delete-res', e.message, false); }
-    }
-</script>
-
+<script src="/static/app.js"></script>
 </body>
 </html>
