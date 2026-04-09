@@ -48,12 +48,10 @@ fn app() -> Html {
                 {
                     Ok(resp) if resp.ok() => {
                         register_message.set("Account created successfully".into());
-                        // vider les champs
                         register_state.set(("".to_string(), "".to_string(), "".to_string()));
                     }
                     _ => {
                         register_message.set("Failed to create account".into());
-                        // vider les champs en cas d'échec aussi
                         register_state.set(("".to_string(), "".to_string(), "".to_string()));
                     }
                 }
