@@ -29,9 +29,5 @@ impl Fairing for SecurityHeaders {
             "Referrer-Policy",
             "strict-origin-when-cross-origin",
         ));
-        res.set_header(Header::new(
-            "Strict-transport-Security",
-            "max-age=31536000; includeSubDomains",
-        ));
     }
 }
