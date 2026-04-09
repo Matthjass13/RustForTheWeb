@@ -84,7 +84,7 @@ async fn index(db: &State<DbConn>) -> String {
         .await
         .unwrap();
 
-    format!("Nombre de tables: {}", row.0)
+    format!("Number of tables: {}", row.0)
 }
 
 #[get("/get_users")]

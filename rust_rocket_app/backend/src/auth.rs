@@ -94,7 +94,7 @@ pub async fn login(
         role,
     };
 
-    let secret = std::env::var("JWT_SECRET").expect("JWT_SECRET non défini");
+    let secret = std::env::var("JWT_SECRET").expect("JWT_SECRET not defined");
 
     let token = encode(
         &Header::default(),
