@@ -19,7 +19,7 @@ server:
   # Port on which the server will listen. the server binding is 0.0.0.0:{PORT}
   port: 5150
   # Binding for the server (which interface to bind to)
-  binding: localhost
+  binding: 0.0.0.0
   # The UI hostname or IP address that mailers will point to.
   host: http://localhost
   # Out of the box middleware configuration. to disable middleware you can changed the `enable` field to `false` of comment the middleware block
@@ -27,7 +27,7 @@ server:
     fallback:
       enable: false
     static:
-      enable: true
+      enable: false
       must_exist: true
       precompressed: false
       folder:
@@ -42,8 +42,6 @@ workers:
   #   - ForegroundBlocking - Workers operate in the foreground and block until tasks are completed.
   #   - BackgroundAsync - Workers operate asynchronously in the background, processing tasks with async capabilities.
   mode: BackgroundAsync
-
-  
 
 # Mailer Configuration.
 mailer:
@@ -73,17 +71,17 @@ mailer:
 # Database Configuration
 database:
   # Database connection URI
-  uri: {{ get_env(name="DATABASE_URL", default="sqlite://locoapp_development.sqlite?mode=rwc") }}
+  uri: '{{ get_env(name="DATABASE_URL", default="sqlite:///app/data/locoapp.sqlite?mode=rwc") }}'
   # When enabled, the sql query will be logged.
   enable_logging: false
   # Set the timeout duration when acquiring a connection.
-  connect_timeout: {{ get_env(name="DB_CONNECT_TIMEOUT", default="500") }}
+  connect_timeout: 500
   # Set the idle duration before closing a connection.
-  idle_timeout: {{ get_env(name="DB_IDLE_TIMEOUT", default="500") }}
+  idle_timeout: 500
   # Minimum number of connections for a pool.
-  min_connections: {{ get_env(name="DB_MIN_CONNECTIONS", default="1") }}
+  min_connections: 1
   # Maximum number of connections for a pool.
-  max_connections: {{ get_env(name="DB_MAX_CONNECTIONS", default="1") }}
+  max_connections: 1
   # Run migration up when application loaded
   auto_migrate: true
   # Truncate database when application loaded. This is a dangerous operation, make sure that you using this flag only on dev environments or test mode

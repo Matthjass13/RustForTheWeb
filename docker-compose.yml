@@ -79,11 +79,54 @@ services:
     environment:
       DATABASE_URL: postgres://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-secret}@postgres:5432/${POSTGRES_DB:-mydb}
       ROCKET_ADDRESS: "0.0.0.0"
-      JWT_SECRET: "87e6d51c9b951767ab3dc614e44046a0dc66677bcf3a00a053e4d1c1d3656b2c"
-      FRONTEND_URL: "http://localhost:8001"
+    JWT_SECRET: "87e6d51c9b951767ab3dc614e44046a0dc66677bcf3a00a053e4d1c1d3656b2c"
+    FRONTEND_URL: "http://localhost:8001"
     depends_on:
       postgres:
         condition: service_healthy
 
+  loco_be:
+    build:
+      context: ./Loco/locoapp
+      dockerfile: Dockerfile
+    container_name: loco_be
+    restart: unless-stopped
+    # Using '|' (pipe) is safer for complex scripts to preserve line breaks
+    command: >
+      sh -c "
+      if [ ! -f /app/data/locoapp.sqlite ]; then
+        echo 'Database not found. Initializing...';
+        mkdir -p /app/data && ./locoapp db migrate && ./locoapp db seed;
+      else
+        echo 'Database exists. Skipping seed.';
+        ./locoapp db migrate;
+      fi;
+      ./locoapp start
+      "
+    ports:
+      - "5150:5150"
+    environment:
+      DATABASE_URL: sqlite:///app/data/locoapp.sqlite?mode=rwc
+      LOCO_ENV: development
+    volumes:
+      - loco_sqlite_data:/app/data
+
+  loco_fe:
+    build:
+      context: ./Loco/locoapp/frontend
+      dockerfile: Dockerfile
+    container_name: loco_fe
+    volumes:
+      - ./Loco/locoapp/frontend:/app # Mount your code for live-reload
+      - /app/node_modules
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      VITE_API_URL: http://localhost:5150
+    depends_on:
+      - loco_be
+
 volumes:
   postgres_data:
+  loco_sqlite_data:
