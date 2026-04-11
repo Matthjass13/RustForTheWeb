@@ -89,17 +89,16 @@
         dockerfile: Dockerfile
       container_name: loco_be
       restart: unless-stopped
+      # Using '|' (pipe) is safer for complex scripts to preserve line breaks
       command: >
         sh -c "
         if [ ! -f /app/data/locoapp.sqlite ]; then
           echo 'Database not found. Initializing...';
-          mkdir -p /app/data && 
-          ./locoapp db migrate && 
-          ./locoapp db seed;
+          mkdir -p /app/data && ./locoapp db migrate && ./locoapp db seed;
         else
           echo 'Database exists. Skipping seed.';
           ./locoapp db migrate;
-        fi
+        fi;
         ./locoapp start
         "
       ports:
@@ -108,11 +107,7 @@
         DATABASE_URL: sqlite:///app/data/locoapp.sqlite?mode=rwc
         LOCO_ENV: development
       volumes:
-        # Persiste le fichier SQLite entre les redémarrages du container
-        # Le chemin /app/data/locoapp.db doit correspondre à ce qui est
-        # configuré dans config/production.yaml (voir note ci-dessous)
         - loco_sqlite_data:/app/data
-      # Pas de depends_on postgres : SQLite est embarqué, pas de serveur externe
 
     loco_fe:
       build:
