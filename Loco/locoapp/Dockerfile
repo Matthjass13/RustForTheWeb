@@ -39,7 +39,7 @@ COPY --from=builder /app/target/release/locoapp-cli /app/locoapp
 
 # Copy config folder
 COPY --from=builder /app/config /app/config
-
+COPY --from=builder /app/src/fixtures ./src/fixtures
 # SQLite database will be stored here (mounted as a volume)
 RUN mkdir -p /app/data
 

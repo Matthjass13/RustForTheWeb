@@ -1,118 +1,135 @@
-# this file initialises the Axum, Python, Rocket, Redis and PostgresDB containers
+  # this file initialises the Axum, Python, Rocket, Redis and PostgresDB containers
 
-services:
-  postgres:
-    image: postgres:latest
-    container_name: postgres_db
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER:-admin}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secret}
-      POSTGRES_DB: ${POSTGRES_DB:-mydb}
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql
-      - ./init_script.sql:/docker-entrypoint-initdb.d/init_script.sql # mount directly
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "pg_isready -U ${POSTGRES_USER:-admin} -d ${POSTGRES_DB:-mydb}",
-        ]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+  services:
+    postgres:
+      image: postgres:latest
+      container_name: postgres_db
+      restart: unless-stopped
+      environment:
+        POSTGRES_USER: ${POSTGRES_USER:-admin}
+        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secret}
+        POSTGRES_DB: ${POSTGRES_DB:-mydb}
+      ports:
+        - "5432:5432"
+      volumes:
+        - postgres_data:/var/lib/postgresql
+        - ./init_script.sql:/docker-entrypoint-initdb.d/init_script.sql # mount directly
+      healthcheck:
+        test:
+          [
+            "CMD-SHELL",
+            "pg_isready -U ${POSTGRES_USER:-admin} -d ${POSTGRES_DB:-mydb}",
+          ]
+        interval: 5s
+        timeout: 5s
+        retries: 5
 
-  redis:
-    image: redis:alpine
-    container_name: redis_score
-    restart: unless-stopped
-    ports:
-      - "6379:6379"
+    redis:
+      image: redis:alpine
+      container_name: redis_score
+      restart: unless-stopped
+      ports:
+        - "6379:6379"
 
-  axum_be:
-    build:
-      context: ./Axum
-      dockerfile: Dockerfile
-    container_name: axum_be
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    environment:
-      DATABASE_URL: postgres://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-secret}@postgres:5432/${POSTGRES_DB:-mydb}
-      REDIS_URL: redis://redis:6379
-      DJANGO_URL: http://python_be:8000
-    depends_on:
-      postgres:
-        condition: service_healthy
+    axum_be:
+      build:
+        context: ./Axum
+        dockerfile: Dockerfile
+      container_name: axum_be
+      restart: unless-stopped
+      ports:
+        - "3001:3000"
+      environment:
+        DATABASE_URL: postgres://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-secret}@postgres:5432/${POSTGRES_DB:-mydb}
+        REDIS_URL: redis://redis:6379
+        DJANGO_URL: http://python_be:8000
+      depends_on:
+        postgres:
+          condition: service_healthy
 
-  python_be:
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER:-admin}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secret}
-      POSTGRES_DB: ${POSTGRES_DB:-mydb}
-      POSTGRES_HOST: postgres
-      REDIS_HOST: redis
-    build:
-      context: ./PythonApp
-      dockerfile: Dockerfile
-    container_name: python_be
-    restart: unless-stopped
-    ports:
-      - "8000:8000"
-    depends_on:
-      postgres:
-        condition: service_healthy
-    command: >
-      sh -c "python manage.py migrate --noinput &&
-            python manage.py runserver 0.0.0.0:8000"
+    python_be:
+      environment:
+        POSTGRES_USER: ${POSTGRES_USER:-admin}
+        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secret}
+        POSTGRES_DB: ${POSTGRES_DB:-mydb}
+        POSTGRES_HOST: postgres
+        REDIS_HOST: redis
+      build:
+        context: ./PythonApp
+        dockerfile: Dockerfile
+      container_name: python_be
+      restart: unless-stopped
+      ports:
+        - "8000:8000"
+      depends_on:
+        postgres:
+          condition: service_healthy
+      command: >
+        sh -c "python manage.py migrate --noinput &&
+              python manage.py runserver 0.0.0.0:8000"
 
-  rocket_app:
-    build:
-      context: ./rust_rocket_app
-      dockerfile: Dockerfile
-    container_name: rocket_app
-    restart: unless-stopped
-    ports:
-      - "8001:8000"
-    environment:
-      DATABASE_URL: postgres://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-secret}@postgres:5432/${POSTGRES_DB:-mydb}
-      ROCKET_ADDRESS: "0.0.0.0"
-    depends_on:
-      postgres:
-        condition: service_healthy
+    rocket_app:
+      build:
+        context: ./rust_rocket_app
+        dockerfile: Dockerfile
+      container_name: rocket_app
+      restart: unless-stopped
+      ports:
+        - "8001:8000"
+      environment:
+        DATABASE_URL: postgres://${POSTGRES_USER:-admin}:${POSTGRES_PASSWORD:-secret}@postgres:5432/${POSTGRES_DB:-mydb}
+        ROCKET_ADDRESS: "0.0.0.0"
+      depends_on:
+        postgres:
+          condition: service_healthy
 
-  loco_be:
-    build:
-      context: ./Loco/locoapp
-      dockerfile: Dockerfile
-    container_name: loco_be
-    restart: unless-stopped
-    ports:
-      - "5150:5150"
-    environment:
-      LOCO_ENV: development
-    volumes:
-      # Persiste le fichier SQLite entre les redémarrages du container
-      # Le chemin /app/data/locoapp.db doit correspondre à ce qui est
-      # configuré dans config/production.yaml (voir note ci-dessous)
-      - loco_sqlite_data:/app/data
-    # Pas de depends_on postgres : SQLite est embarqué, pas de serveur externe
+    loco_be:
+      build:
+        context: ./Loco/locoapp
+        dockerfile: Dockerfile
+      container_name: loco_be
+      restart: unless-stopped
+      command: >
+        sh -c "
+        if [ ! -f /app/data/locoapp.sqlite ]; then
+          echo 'Database not found. Initializing...';
+          mkdir -p /app/data && 
+          ./locoapp db migrate && 
+          ./locoapp db seed;
+        else
+          echo 'Database exists. Skipping seed.';
+          ./locoapp db migrate;
+        fi
+        ./locoapp start
+        "
+      ports:
+        - "5150:5150"
+      environment:
+        DATABASE_URL: sqlite:///app/data/locoapp.sqlite?mode=rwc
+        LOCO_ENV: development
+      volumes:
+        # Persiste le fichier SQLite entre les redémarrages du container
+        # Le chemin /app/data/locoapp.db doit correspondre à ce qui est
+        # configuré dans config/production.yaml (voir note ci-dessous)
+        - loco_sqlite_data:/app/data
+      # Pas de depends_on postgres : SQLite est embarqué, pas de serveur externe
 
-  loco_fe:
-    build:
-      context: ./Loco/locoapp/frontend
-      dockerfile: Dockerfile
-    container_name: loco_fe
-    restart: unless-stopped
-    ports:
-      - "5173:5173"
-    environment:
-      VITE_API_URL: http://localhost:5150
-    depends_on:
-      - loco_be
+    loco_fe:
+      build:
+        context: ./Loco/locoapp/frontend
+        dockerfile: Dockerfile
+      container_name: loco_fe
+      volumes:
+        - ./Loco/locoapp/frontend:/app # Mount your code for live-reload
+        - /app/node_modules
+      restart: unless-stopped
+      ports:
+        - "3000:3000"
+      environment:
+        VITE_API_URL: http://localhost:5150
+      depends_on:
+        - loco_be
 
-volumes:
-  postgres_data:
-  loco_sqlite_data:
+  volumes:
+    postgres_data:
+    loco_sqlite_data:

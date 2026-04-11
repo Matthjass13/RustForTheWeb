@@ -4,7 +4,7 @@ FROM node:20-alpine
 WORKDIR /app
 
 # 1. Copy manifests and install dependencies
-COPY package.json package-lock.json* ./
+COPY package.json ./
 RUN npm install
 
 # 2. Copy the rest of the source
