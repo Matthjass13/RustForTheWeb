@@ -5,8 +5,17 @@ Rust is a general-purpose programming language known for its focus on performanc
 # How to setup the environment
 
 1. Install Docker, and launch Docker Daemon
-2. Navigate to project root, and run command 'docker compose up'
-3. After containers are built, Axum website is served at localhost:3000, Django at localhost:8000
+2. Create a .env file in the project root for with the following environment variables:
+```
+POSTGRES_USER=user1
+POSTGRES_PASSWORD=password
+POSTGRES_DB=postgres_db
+```
+
+3. In project root run command ```docker compose up```
+
+4. After containers are built, Axum website is served at localhost:3001, Django at localhost:8000, Rocket at localhost:8001
+
 
 # How to run our examples
 
