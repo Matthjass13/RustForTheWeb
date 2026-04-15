@@ -2,6 +2,12 @@
 
 Rust is a general-purpose programming language known for its focus on performance, type safety, concurrency, and memory safety. The goal of this project is to determine if Rust can replace Ruby on Rails, Python+Django or Spring Boot to write web applications. Keywords: Rust, WebAssembly, web development, OWASP Top 10
 
+# Students
+
+Hugo Da Silva
+Benjamin Worton
+Matthias Gaillard
+
 # How to setup the environment
 
 1. Install Docker, and launch Docker Daemon
