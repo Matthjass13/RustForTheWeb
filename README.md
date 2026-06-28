@@ -2,6 +2,9 @@
 
 Rust is a general-purpose programming language known for its focus on performance, type safety, concurrency, and memory safety. The goal of this project is to determine if Rust can replace Ruby on Rails, Python+Django or Spring Boot to write web applications. Keywords: Rust, WebAssembly, web development, OWASP Top 10
 
+<img width="1335" height="748" alt="image" src="https://github.com/user-attachments/assets/dfcc7623-9863-4e9a-93b9-98182a25295a" />
+
+
 # Students
 
 Hugo Da Silva
